@@ -1,11 +1,13 @@
-public struct WaveStartedEvent
+public readonly struct WaveStartedEvent
 {
-    public int WaveNumber;
-    public float WaveDuration;
+    public readonly int WaveNumber;
+    public readonly int TotalWaves;
+    public readonly float WaveDuration;
 
-    public WaveStartedEvent(int waveNumber, float waveDuration)
+    public WaveStartedEvent(int waveNumber, int totalWaves = 3, float waveDuration = 300f)
     {
         WaveNumber = waveNumber;
+        TotalWaves = totalWaves;
         WaveDuration = waveDuration;
     }
 }

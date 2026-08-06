@@ -23,6 +23,21 @@ public static class EventBus
     }
 
     /// <summary>
+    /// Unsubscribe to specific event.
+    /// </summary>
+    /// <typeparam name="T">Type of event to subscribe to</typeparam>
+    /// <param name="listener">Action to execute when event is published</param>
+    public static void Unsubscribe<T>(Action<T> listener)
+    {
+        Type eventType = typeof(T);
+
+        if (_subscribers.ContainsKey(eventType))
+        {
+            _subscribers[eventType] -= obj => listener((T)obj);
+        }
+    }
+
+    /// <summary>
     /// Publish an event to all subscribers.
     /// </summary>
     /// <typeparam name="T">Type of event to publish</typeparam>
