@@ -14,6 +14,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Vector2 _facingDirection = Vector2.down;
     [SerializeField] private float _interactionDistance = 1f;
     [SerializeField] private Vector2Int _targetCell;
+    [SerializeField] private int _repairAmount = 10;
+
+    public Vector2Int TargetCell => _targetCell;
 
     [Header("State")]
     [SerializeField] private bool _isOnMud = false;
@@ -69,10 +72,39 @@ public class PlayerController : MonoBehaviour
 
         if (hit)
         {
-            // Water pump is target
-            if (hit.gameObject.TryGetComponent(out WaterPumpController waterPump))
+            // Structure is target
+            if (hit.gameObject.TryGetComponent(out StructureController structure))
             {
-                StartCoroutine(UnclogWaterPump(waterPump));
+                if (structure.IsDamaged)
+                {
+                    EventBus.Publish(new RepairStructureRequestEvent(structure.Position, structure.DataSO, (success) =>
+                    {
+                        if (success) structure.Repair(_repairAmount);
+                        else Debug.LogWarning("Can't repair. Player doesn't have enough resources.");
+                    }));
+                }
+            }
+            // Water pump is target
+            else if (hit.gameObject.TryGetComponent(out WaterPumpController waterPump))
+            {
+                if (waterPump.IsClogged)
+                {
+                    StartCoroutine(UnclogWaterPump(waterPump));
+                }
+            }
+            else if (hit.gameObject.TryGetComponent(out DrainController drain))
+            {
+                if (drain.IsClogged)
+                {
+                    StartCoroutine(UnclogDrain(drain));
+                }
+            }
+            else if (hit.gameObject.TryGetComponent(out ResourceNodeController resourceNode))
+            {
+                EventBus.Publish(new ResourceCollectedEvent(_targetCell, resourceNode.Type, resourceNode.Amount));
+
+                // TODO: Return to pool
+                resourceNode.gameObject.SetActive(false);
             }
         }
     }
@@ -84,6 +116,15 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(1f);
 
         waterPump.SetClogState(false);
+    }
+
+    private IEnumerator UnclogDrain(DrainController drain)
+    {
+        // TODO: Do unclogging animation, SFX, particles
+
+        yield return new WaitForSeconds(1f);
+
+        drain.SetClogState(false);
     }
 
     public void OnBuild(InputValue value)
