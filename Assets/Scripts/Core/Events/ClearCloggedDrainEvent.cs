@@ -1,0 +1,11 @@
+using UnityEngine;
+
+public readonly struct ClearCloggedDrainEvent
+{
+    public readonly Vector2Int position;
+
+    public ClearCloggedDrainEvent(Vector2Int position)
+    {
+        this.position = position;
+    }
+}
