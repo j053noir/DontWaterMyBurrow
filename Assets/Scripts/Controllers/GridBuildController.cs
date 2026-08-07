@@ -77,7 +77,7 @@ public class GridBuildController : MonoBehaviour
 
         _buildPosition = @event.Position;
         var gameObject = Instantiate(_selectedStructureSO.Prefab, GetBuildPosition(), Quaternion.identity);
-        EventBus.Publish(new StructureBuiltEvent(_selectedStructureSO.Type, _buildPosition, gameObject));
+        EventBus.Publish(new StructureBuiltEvent(_selectedStructureSO.Type, _buildPosition, gameObject, _selectedStructureSO));
     }
 
     private Vector3 GetBuildPosition()

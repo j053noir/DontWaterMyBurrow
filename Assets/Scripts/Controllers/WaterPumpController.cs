@@ -2,9 +2,11 @@ using UnityEngine;
 
 public class WaterPumpController : StructureController
 {
-    [SerializeField] private float _drainRadius = 5f;
+    [SerializeField] private int _drainRadius = 2;
     [SerializeField] private float _drainRate = 3f;
     [SerializeField] private bool _isClogged = false;
+
+    public bool IsClogged => _isClogged;
 
     public void SetClogState(bool isClogged)
     {
