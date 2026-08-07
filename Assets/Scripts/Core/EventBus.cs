@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 
-public static class EventBus
+namespace DontWaterMyBurrow.Core
 {
+    public static class EventBus
+    {
     private static readonly Dictionary<Type, Action<object>> _subscribers = new();
 
     /// <summary>
@@ -59,4 +61,5 @@ public static class EventBus
     {
         _subscribers.Clear();
     }
+}
 }
