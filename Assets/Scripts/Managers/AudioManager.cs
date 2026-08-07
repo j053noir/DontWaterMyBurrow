@@ -18,7 +18,7 @@ public class AudioManager : MonoBehaviour
 
     private void OnDisable()
     {
-        EventBus.Clear();
+        EventBus.Unsubscribe<GameStateChangedEvent>(OnGameStateChanged);
     }
 
     private void OnGameStateChanged(GameStateChangedEvent @event)
