@@ -19,12 +19,16 @@ namespace DontWaterMyBurrow.Water
         {
             EventBus.Subscribe<GameStateChangedEvent>(OnGameStateChanged);
             EventBus.Subscribe<WaterReachedBurrowEvent>(OnWaterReachedBurrow);
+
+            EventBus.Publish(new RegisterManagerEvent(this.GetType()));
         }
 
         private void OnDisable()
         {
             EventBus.Unsubscribe<GameStateChangedEvent>(OnGameStateChanged);
             EventBus.Unsubscribe<WaterReachedBurrowEvent>(OnWaterReachedBurrow);
+
+            EventBus.Publish(new UnregisterManagerEvent(this.GetType()));
         }
 
         private void Update()
@@ -37,7 +41,7 @@ namespace DontWaterMyBurrow.Water
 
         private void OnGameStateChanged(GameStateChangedEvent @event)
         {
-            if (@event.NewState == GameState.StartMenu || @event.NewState == GameState.GameOver)
+            if (@event.NewState == GameState.Restart)
             {
                 ResetFloodMeter();
             }
@@ -65,6 +69,8 @@ namespace DontWaterMyBurrow.Water
         public void ResetFloodMeter()
         {
             _floodMeter = 0;
+
+            EventBus.Publish(new ManagerReadyEvent(this.GetType()));
         }
     }
 }
