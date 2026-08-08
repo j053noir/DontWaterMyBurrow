@@ -1,19 +1,11 @@
-using UnityEngine;
-using DontWaterMyBurrow.Core;
-using DontWaterMyBurrow.Game;
-using DontWaterMyBurrow.Game.Events;
-using System;
 using System.Collections.Generic;
+using DontWaterMyBurrow.Core;
+using DontWaterMyBurrow.Data;
+using DontWaterMyBurrow.Game.Events;
+using UnityEngine;
 
 namespace DontWaterMyBurrow.Audio
 {
-    [Serializable]
-    public class StateMusic
-    {
-        public GameState GameState;
-        public AudioClip Music;
-    }
-
     public class AudioManager : MonoBehaviour
     {
         [Header("Audio Sources")]
@@ -21,7 +13,7 @@ namespace DontWaterMyBurrow.Audio
         [SerializeField] private AudioSource _sfxAudioSource;
 
         [Header("Game State Music")]
-        [SerializeField] private List<StateMusic> _stateMusics;
+        [SerializeField] private List<StateAudioSO> _stateMusics;
 
         private void OnEnable()
         {
@@ -37,16 +29,16 @@ namespace DontWaterMyBurrow.Audio
 
         private void OnGameStateChanged(GameStateChangedEvent @event)
         {
-            StateMusic stateMusic = _stateMusics.Find(x => x.GameState == @event.NewState);
+            var stateMusic = _stateMusics.Find(x => x.GameState == @event.NewState);
 
-            if (stateMusic == null || stateMusic.Music == null)
+            if (stateMusic == null || stateMusic.AudioClip == null)
             {
                 Debug.LogError("AudioManager: No music found for game state: " + @event.NewState);
                 _musicAudioSource.Stop();
                 return;
             }
 
-            _musicAudioSource.clip = stateMusic.Music;
+            _musicAudioSource.clip = stateMusic.AudioClip;
             _musicAudioSource.Play();
         }
 
