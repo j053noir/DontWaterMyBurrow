@@ -1,0 +1,39 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <ui:Template name="ResourceCounterComponent" src="project://database/Assets/UI/Components/ResourceCounter.uxml?fileID=9197481963319205126&amp;guid=9eee6615742875943954a4756b5d350e&amp;type=3#ResourceCounter"/>
+    <Style src="project://database/Assets/UI/Styles/GlobalStyles.uss?fileID=7433441132597879392&amp;guid=764d243bde6e8a44397ad335cc4f8164&amp;type=3#GlobalStyles"/>
+    <Style src="project://database/Assets/UI/Styles/HUD.uss?fileID=7433441132597879392&amp;guid=2636ab53799b61b4989fa3094ec68e6f&amp;type=3#HUD"/>
+    <ui:VisualElement name="hud-root" class="hud-root">
+        <ui:VisualElement name="resources-container" class="resources-container">
+            <ui:Instance template="ResourceCounterComponent" name="resource-counter-wood">
+                <AttributeOverrides element-name="resource-quantity" text="-1"/>
+                <ui:Image name="resource-icon" class="resource-icon" style="background-image: resource(&quot;Wood&quot;);"/>
+            </ui:Instance>
+            <ui:Instance template="ResourceCounterComponent" name="resource-counter-stone">
+                <AttributeOverrides element-name="resource-quantity" text="-1"/>
+                <ui:Image name="resource-icon" class="resource-icon" style="background-image: resource(&quot;Stone&quot;);"/>
+            </ui:Instance>
+            <ui:Instance template="ResourceCounterComponent" name="resource-counter-sand">
+                <AttributeOverrides element-name="resource-quantity" text="-1"/>
+                <ui:Image name="resource-icon" class="resource-icon" style="background-image: resource(&quot;Sand&quot;);"/>
+            </ui:Instance>
+        </ui:VisualElement>
+        <ui:VisualElement name="wave-info-container" class="wave-info-container">
+            <ui:VisualElement name="wave-number-wrapper" class="wave-number-wrapper" style="justify-content: center;">
+                <ui:Label name="wave-number-text" text="Wave" class="wave-number-text"/>
+                <ui:Label name="wave-number" text="1" class="wave-number"/>
+            </ui:VisualElement>
+            <ui:VisualElement name="time-until-next-wave-wrapper" class="time-until-next-wave-wrapper" style="justify-content: center;">
+                <ui:Label name="time-until-next-wave" text="10:00" class="time-until-next-wave"/>
+                <ui:Label name="time-until-next-wave-text" text="Next wave starts in..." class="time-until-next-wave-text"/>
+            </ui:VisualElement>
+            <ui:VisualElement name="wave-timer-wrapper" class="wave-timer-wrapper" style="justify-content: center;">
+                <ui:Label name="wave-timer" text="10:00" class="wave-timer"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="burrow-flood-container" class="burrow-flood-container">
+            <ui:Image name="burrow-background" class="burrow-background" style="height: 1047px;"/>
+            <ui:ProgressBar value="100" name="flood-bar" title="100 %" high-value="100" class="flood-bar"/>
+            <ui:Image name="burrow-foreground" class="burrow-foreground" style="flex-grow: 1;"/>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

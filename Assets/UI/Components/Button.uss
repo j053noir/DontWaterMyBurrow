@@ -1,0 +1,55 @@
+.button-container {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    border-bottom-width: 15px;
+    scale: 0.75 0.75;
+    flex-grow: 1;
+}
+
+.button-container:hover {
+    scale: 1 1;
+}
+
+.button-container:active {
+    background-color: blue;
+}
+
+.button {
+    background-color: rgb(255, 137, 1);
+    border-radius: 12px;
+    border-width: 2px;
+    border-color: rgb(255, 255, 255);
+    padding: 10px;
+    font-size: 48;
+    unity-font-style: bold;
+    color: rgb(51, 51, 51);
+    -unity-text-align: middle-center;
+    cursor: url("project://database/Assets/Sprites/UI/Cursor.png?fileID=2800000&guid=79d5402db9c71b848a9ec023f8218562&type=3#Cursor");
+    border-top-width: 25px;
+    border-bottom-width: 25px;
+    border-left-width: 25px;
+    border-right-width: 25px;
+    -unity-font-style: bold;
+    letter-spacing: 7.5px;
+    flex-grow: 1;
+    min-height: 150px;
+    border-top-left-radius: 50%;
+    border-bottom-left-radius: 50%;
+}
+
+.button:hover {
+    background-color: rgb(255, 154, 43);
+    color: rgb(255, 255, 255);
+}
+
+.button:active {
+    background-color: rgb(255, 122, 1);
+    color: rgb(20, 123, 0);
+}
+
+.button-leaves {
+    position: absolute;
+    right: -135px;
+    bottom: -27px;
+}

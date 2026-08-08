@@ -1,0 +1,10 @@
+#pause-menu {
+    flex-grow: 1;
+    align-self: center;
+    justify-content: center;
+}
+
+.buttons {
+    width: 720px;
+    align-self: center;
+}

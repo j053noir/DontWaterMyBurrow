@@ -1,0 +1,104 @@
+VisualElement {
+}
+
+.hud-root {
+    flex-direction: row;
+    height: 100%;
+}
+
+.resources-container {
+    width: 10%;
+}
+
+.wave-info-container {
+    width: 70%;
+    -unity-text-align: upper-center;
+    font-size: 64px;
+    -unity-font-style: bold;
+    -unity-text-outline-width: 3px;
+    -unity-text-outline-color: rgb(255, 255, 255);
+}
+
+.wave-number-wrapper {
+    flex-direction: row;
+    -unity-text-align: upper-center;
+}
+
+.time-until-next-wave-wrapper {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.time-until-next-wave {
+    font-size: 420px;
+}
+
+.time-until-next-wave-text {
+    color: rgb(255, 255, 255);
+    -unity-text-outline-width: 0;
+}
+
+.burrow-flood-container {
+    align-content: flex-end;
+    flex-direction: column;
+    align-self: center;
+    justify-content: center;
+    align-items: center;
+    width: auto;
+    height: 100%;
+}
+
+.burrow-foreground {
+    background-image: url("project://database/Assets/Sprites/HUD/Burrow.png?fileID=2800000&guid=4108d0ca52bbf7e47aad0b62cabab397&type=3#Burrow");
+    -unity-slice-left: 0;
+    -unity-slice-right: 0;
+    -unity-slice-top: 0;
+    -unity-slice-bottom: 0;
+    height: 960px;
+    width: 480px;
+    background-size: contain;
+}
+
+.flood-bar {
+    rotate: -90deg;
+    align-items: center;
+    justify-content: flex-end;
+    position: absolute;
+    scale: 1 7;
+    right: -200px;
+    bottom: 360px;
+}
+
+.flood-bar > .unity-progress-bar__container {
+    background-color: transparent;
+    width: 650px;
+    height: auto;
+    border-width: 0;
+}
+
+.flood-bar > .unity-progress-bar__container > .unity-progress-bar__background {
+    background-color: transparent;
+    border-width: 0;
+}
+
+.flood-bar > .unity-progress-bar__container > .unity-progress-bar__background > .unity-progress-bar__progress {
+    background-color: rgba(0, 162, 255, 0.31);
+}
+
+.flood-bar > .unity-progress-bar__container > .unity-progress-bar__background > .unity-progress-bar__title-container > .unity-progress-bar__title {
+    font-size: 24px;
+    rotate: 90deg;
+    scale: 0.15 1;
+    translate: 300px -1px;
+    -unity-font-style: bold;
+    color: rgb(255, 255, 255);
+}
+
+.burrow-background {
+    background-image: url("project://database/Assets/Sprites/HUD/Burrow_Background.png?fileID=2800000&guid=fcf1942524064a74ea1b0d4534ca78c9&type=3#Burrow_Background");
+    width: 480px;
+    height: 720px;
+    position: absolute;
+    -unity-background-scale-mode: scale-and-crop;
+}

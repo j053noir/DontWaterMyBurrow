@@ -1,0 +1,22 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements"
+    editor-extension-mode="False">
+    <ui:Template name="Button"
+        src="project://database/Assets/UI/Components/Button.uxml?fileID=9197481963319205126&amp;guid=28f7dcd7a0de8494c8282e0884628595&amp;type=3#Button" />
+    <ui:Template name="Title"
+        src="project://database/Assets/UI/Components/Title.uxml?fileID=9197481963319205126&amp;guid=52077a024d21d894a8a438bfafc7fcc5&amp;type=3#Title" />
+    <Style
+        src="project://database/Assets/UI/Styles/GlobalStyles.uss?fileID=7433441132597879392&amp;guid=764d243bde6e8a44397ad335cc4f8164&amp;type=3#GlobalStyles" />
+    <Style
+        src="project://database/Assets/UI/Styles/Main_Menu.uss?fileID=7433441132597879392&amp;guid=ce3ed4b8f260ed2409d2964646c30988&amp;type=3#Main_Menu" />
+    <ui:VisualElement name="main-menu" class="main-menu">
+        <ui:Instance template="Title" name="title" />
+        <ui:VisualElement name="buttons" class="buttons">
+            <ui:Instance template="Button" name="start-button">
+                <AttributeOverrides element-name="button" text="START" />
+            </ui:Instance>
+            <ui:Instance template="Button" name="quit-button">
+                <AttributeOverrides element-name="button" text="QUIT" />
+            </ui:Instance>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

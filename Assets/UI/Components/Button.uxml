@@ -1,0 +1,8 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/Components/Button.uss?fileID=7433441132597879392&amp;guid=f6863da01a04c244bba64ee923a12b64&amp;type=3#Button"/>
+    <ui:VisualElement name="button-wrapper" class="button-container" style="flex-shrink: 1; flex-grow: 0; width: 100%;">
+        <ui:Button text="Button" name="button" class="button">
+            <ui:Image source="project://database/Assets/Sprites/UI/Button_Leaves.png?fileID=2800000&amp;guid=371b549dbfe38f2429bbe8aef4fa9925&amp;type=3#Button_Leaves" name="leaves" class="button-leaves"/>
+        </ui:Button>
+    </ui:VisualElement>
+</ui:UXML>

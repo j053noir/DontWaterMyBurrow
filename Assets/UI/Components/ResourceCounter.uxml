@@ -1,0 +1,12 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements"
+    editor-extension-mode="False">
+    <Style
+        src="project://database/Assets/UI/Components/ResourceCounter.uss?fileID=7433441132597879392&amp;guid=3336347627c99ca4cb1658bf0062067e&amp;type=3#ResourceCounter" />
+    <ui:VisualElement name="resource-container" class="resource-box">
+        <ui:VisualElement name="resource-icon-container" class="resource-icon-container"
+            content-container="anyValue">
+            <!-- Add icon element here -->
+        </ui:VisualElement>
+        <ui:Label name="resource-quantity" text="0" class="resource-quantity" />
+    </ui:VisualElement>
+</ui:UXML>

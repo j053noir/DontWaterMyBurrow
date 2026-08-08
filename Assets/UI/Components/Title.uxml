@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/Components/Title.uss?fileID=7433441132597879392&amp;guid=2fd36ebd0ae772a4a83587c3d7ca1ccb&amp;type=3#Title"/>
+    <ui:VisualElement name="title-container">
+        <ui:Label name="title-label" text="Don&apos;t Water My Burrow" class="title-label" style="font-size: 180px; -unity-font-style: bold; -unity-text-outline-color: rgb(255, 255, 255); -unity-text-outline-width: 4px; color: rgb(255, 107, 42); -unity-font-definition: url(&quot;project://database/Assets/UI%20Toolkit/UnityThemes/UnityDefaultRuntimeTheme.tss?fileID=2230732570650464555&amp;guid=76b46e1b79a48ef439ecaa54edc21e26&amp;type=3#NotInter-Regular&quot;);"/>
+    </ui:VisualElement>
+</ui:UXML>

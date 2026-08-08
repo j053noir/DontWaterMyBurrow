@@ -1,0 +1,9 @@
+.main-menu {
+    flex-grow: 1;
+    justify-content: space-around;
+}
+
+.buttons {
+    width: 640px;
+    align-self: center;
+}

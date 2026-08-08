@@ -1,0 +1,28 @@
+.resource-box {
+    padding: 5px;
+    flex-direction: row;
+}
+
+.resource-icon-container {
+    width: 72px;
+    height: 72px;
+    padding-right: 5px;
+}
+
+.resource-icon {
+    width: 72px;
+    height: 72px;
+    background-image: resource('Blank_icon');
+    background-size: contain;
+    margin-top: 15px;
+    aspect-ratio: auto;
+}
+
+.resource-quantity {
+    width: 50px;
+    -unity-text-align: middle-left;
+    font-size: 72px;
+    -unity-font-style: bold;
+    -unity-text-outline-width: 3px;
+    -unity-text-outline-color: rgb(255, 255, 255);
+}

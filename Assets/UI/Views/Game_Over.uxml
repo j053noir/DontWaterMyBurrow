@@ -1,0 +1,25 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements"
+    editor-extension-mode="False">
+    <ui:Template name="Button"
+        src="project://database/Assets/UI/Components/Button.uxml?fileID=9197481963319205126&amp;guid=28f7dcd7a0de8494c8282e0884628595&amp;type=3#Button" />
+    <ui:Template name="Title"
+        src="project://database/Assets/UI/Components/Title.uxml?fileID=9197481963319205126&amp;guid=52077a024d21d894a8a438bfafc7fcc5&amp;type=3#Title" />
+    <Style
+        src="project://database/Assets/UI/Styles/GlobalStyles.uss?fileID=7433441132597879392&amp;guid=764d243bde6e8a44397ad335cc4f8164&amp;type=3#GlobalStyles" />
+    <Style
+        src="project://database/Assets/UI/Styles/Game_Over.uss?fileID=7433441132597879392&amp;guid=5eea42e27d5a50543a3d871a084c377e&amp;type=3#Game_Over" />
+    <ui:VisualElement name="game-over" class="game-over">
+        <ui:Instance template="Title" name="title">
+            <AttributeOverrides element-name="title-label" text="GAME OVER" />
+        </ui:Instance>
+        <ui:Label text="Your home is flooded" name="subtitle" class="subtitle" />
+        <ui:VisualElement name="buttons" class="buttons">
+            <ui:Instance template="Button" name="restart-button">
+                <AttributeOverrides element-name="button" text="RETRY" />
+            </ui:Instance>
+            <ui:Instance template="Button" name="main-menu-button">
+                <AttributeOverrides element-name="button" text="GO TO MAIN MENU" />
+            </ui:Instance>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
