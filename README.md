@@ -42,5 +42,5 @@ Built with maintainability, scalability, and clean code principles in mind:
 
 Developed live as part of a YouTube Devlog series preparing for upcoming Game Jams. 
 
-* **YouTube:** [@josegamedev](https://www.youtube.com/@josegamedev)
+* **YouTube:** [@josecodefs](https://www.youtube.com/channel/UCXFJB_5-WEavXrKJFCSjKYA)
 * **Discord Community:** Join our team [Discord](https://discord.gg/Kmn3yHq4cq)

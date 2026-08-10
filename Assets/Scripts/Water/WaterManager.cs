@@ -6,6 +6,7 @@ using DontWaterMyBurrow.Structures.Events;
 using DontWaterMyBurrow.Water.Events;
 using DontWaterMyBurrow.Game.Events;
 using DontWaterMyBurrow.Game;
+using DontWaterMyBurrow.Building.Events;
 
 namespace DontWaterMyBurrow.Water
 {
@@ -48,6 +49,7 @@ namespace DontWaterMyBurrow.Water
             EventBus.Subscribe<RegisterWaterDrainEvent>(OnRegisterWaterDrain);
             EventBus.Subscribe<RemoveWaterDrainEvent>(OnRemoveWaterDrain);
             EventBus.Subscribe<GameStateChangedEvent>(OnGameStateChanged);
+            EventBus.Subscribe<BuildValidationRequestEvent>(OnBuildValidationRequested);
 
             EventBus.Publish(new RegisterManagerEvent(this.GetType()));
         }
@@ -59,6 +61,7 @@ namespace DontWaterMyBurrow.Water
             EventBus.Unsubscribe<RegisterWaterDrainEvent>(OnRegisterWaterDrain);
             EventBus.Unsubscribe<RemoveWaterDrainEvent>(OnRemoveWaterDrain);
             EventBus.Unsubscribe<GameStateChangedEvent>(OnGameStateChanged);
+            EventBus.Unsubscribe<BuildValidationRequestEvent>(OnBuildValidationRequested);
 
             EventBus.Publish(new UnregisterManagerEvent(this.GetType()));
         }
@@ -107,6 +110,14 @@ namespace DontWaterMyBurrow.Water
             if (@event.NewState == GameState.Restart)
             {
                 ResetWater();
+            }
+        }
+
+        private void OnBuildValidationRequested(BuildValidationRequestEvent @event)
+        {
+            if (IsCellFlooded(@event.BuildPosition))
+            {
+                @event.Invalidate();
             }
         }
 

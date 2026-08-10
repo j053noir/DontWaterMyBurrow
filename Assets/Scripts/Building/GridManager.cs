@@ -62,6 +62,7 @@ namespace DontWaterMyBurrow.Building
             EventBus.Subscribe<ResourceSpawnedEvent>(OnResourceSpawned);
             EventBus.Subscribe<ResourceCollectedEvent>(OnResourceCollected);
             EventBus.Subscribe<GameStateChangedEvent>(OnGameStateChanged);
+            EventBus.Subscribe<BuildValidationRequestEvent>(OnBuildValidationRequested);
 
             EventBus.Publish(new RegisterManagerEvent(this.GetType()));
         }
@@ -75,6 +76,7 @@ namespace DontWaterMyBurrow.Building
             EventBus.Unsubscribe<ResourceSpawnedEvent>(OnResourceSpawned);
             EventBus.Unsubscribe<ResourceCollectedEvent>(OnResourceCollected);
             EventBus.Unsubscribe<GameStateChangedEvent>(OnGameStateChanged);
+            EventBus.Unsubscribe<BuildValidationRequestEvent>(OnBuildValidationRequested);
 
             EventBus.Publish(new UnregisterManagerEvent(this.GetType()));
         }
@@ -131,6 +133,14 @@ namespace DontWaterMyBurrow.Building
             _occupiedCells.Clear();
 
             EventBus.Publish(new ManagerReadyEvent(this.GetType()));
+        }
+
+        private void OnBuildValidationRequested(BuildValidationRequestEvent @event)
+        {
+            if (IsCellOccupied(@event.BuildPosition))
+            {
+                @event.Invalidate();
+            }
         }
 
         public bool IsCellOccupied(Vector2Int position)

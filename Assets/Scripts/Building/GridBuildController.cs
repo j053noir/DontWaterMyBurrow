@@ -62,10 +62,10 @@ namespace DontWaterMyBurrow.Building
                 return;
             }
 
-            EventBus.Publish(new BuildValidationRequestEvent(gridPosition, structureSO, isValid =>
-            {
-                SetPreviewState(isValid);
-            }));
+            var validationEvent = new BuildValidationRequestEvent(gridPosition, structureSO);
+            EventBus.Publish(validationEvent);
+
+            SetPreviewState(validationEvent.IsValid);
         }
 
         public void SetPreviewState(bool isValid)

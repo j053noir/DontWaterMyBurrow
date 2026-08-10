@@ -26,6 +26,7 @@ namespace DontWaterMyBurrow.Resources
             EventBus.Subscribe<ResourceCollectedEvent>(OnResouceCollected);
             EventBus.Subscribe<RepairStructureRequestEvent>(OnRepairStructureRequested);
             EventBus.Subscribe<GameStateChangedEvent>(OnGameStateChanged);
+            EventBus.Subscribe<BuildValidationRequestEvent>(OnBuildValidationRequested);
 
             EventBus.Publish(new RegisterManagerEvent(this.GetType()));
         }
@@ -36,6 +37,7 @@ namespace DontWaterMyBurrow.Resources
             EventBus.Unsubscribe<ResourceCollectedEvent>(OnResouceCollected);
             EventBus.Unsubscribe<RepairStructureRequestEvent>(OnRepairStructureRequested);
             EventBus.Unsubscribe<GameStateChangedEvent>(OnGameStateChanged);
+            EventBus.Unsubscribe<BuildValidationRequestEvent>(OnBuildValidationRequested);
 
             EventBus.Publish(new UnregisterManagerEvent(this.GetType()));
         }
@@ -69,6 +71,14 @@ namespace DontWaterMyBurrow.Resources
             _resources.Clear();
 
             EventBus.Publish(new ManagerReadyEvent(this.GetType()));
+        }
+
+        private void OnBuildValidationRequested(BuildValidationRequestEvent @event)
+        {
+            if (!HasEnoughResources(@event.StructureData))
+            {
+                @event.Invalidate();
+            }
         }
 
         public void ConsumeResources(StructureDataSO structureSO)
