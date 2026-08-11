@@ -491,7 +491,7 @@ MonoBehaviour:
   _currentWaveData: {fileID: 11400000, guid: 78d03817d4269a2438f2501d13f42802, type: 2}
   _timeUntilNextWave: 10
   _isWaveActive: 0
-  _gridManager: {fileID: 1504269842}
+  _mapGridConfig: {fileID: 11400000, guid: a627ba1f0afad054f998a3e9a4a03019, type: 2}
 --- !u!1 &331206408
 GameObject:
   m_ObjectHideFlags: 0
@@ -1030,7 +1030,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d92c7800a347c4348beb1106ce79dafe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DontWaterMyBurrow.Water.WaterManager
-  _gridManager: {fileID: 1504269842}
+  _mapGridConfig: {fileID: 11400000, guid: a627ba1f0afad054f998a3e9a4a03019, type: 2}
   _waterFlowVectors: []
   _globalWaterPressure: 0.33
 --- !u!4 &830629543
@@ -1203,7 +1203,7 @@ MonoBehaviour:
   - resourceType: 1
     maxResources: 4
     resourcePrefab: {fileID: 0}
-  _gridManager: {fileID: 1504269842}
+  _mapGridConfig: {fileID: 0}
 --- !u!1 &1258997697
 GameObject:
   m_ObjectHideFlags: 0
@@ -1280,11 +1280,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75202089eab0c0a45a77f2b4137a8393, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DontWaterMyBurrow.Building.GridManager
-  _burrowPosition: {x: 0, y: 10}
-  _minXBoundary: 0
-  _maxXBoundary: 0
-  _yBottomBoundary: 0
-  _yTopBoundary: 0
+  _mapGridConfig: {fileID: 11400000, guid: a627ba1f0afad054f998a3e9a4a03019, type: 2}
 --- !u!4 &1504269843
 Transform:
   m_ObjectHideFlags: 0
