@@ -124,6 +124,8 @@ namespace DontWaterMyBurrow.Resources
 
         public bool HasEnoughResources(StructureDataSO structureSO)
         {
+            if (structureSO == null || structureSO.Costs == null) return false;
+
             foreach (var resource in structureSO.Costs)
             {
                 if (!_resources.ContainsKey(resource.Type) || _resources[resource.Type] < resource.Cost)

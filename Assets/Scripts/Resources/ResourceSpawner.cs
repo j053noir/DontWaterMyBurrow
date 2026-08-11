@@ -129,17 +129,26 @@ namespace DontWaterMyBurrow.Resources
 
         private Vector2Int GetRandomPosition()
         {
+            if (_mapGridConfig == null)
+            {
+                Debug.LogError("[ResourceSpawner] _mapGridConfig is not assigned in the Inspector!");
+                return Vector2Int.zero;
+            }
+
             var randomPosition = new Vector2Int(
                 Random.Range(_mapGridConfig.MinXBoundary, _mapGridConfig.MaxXBoundary), // X within boundaries
                 Random.Range(_mapGridConfig.YBottomBoundary, _mapGridConfig.YTopBoundary) // Y within boundaries
             );
 
-            while (_occupiedCells.Contains(randomPosition))
+            int attempts = 0;
+            int maxAttempts = 100;
+            while (_occupiedCells.Contains(randomPosition) && attempts < maxAttempts)
             {
+                attempts++;
                 // Keep generating random positions until an empty cell is found
                 randomPosition = new Vector2Int(
-                    Random.Range(_mapGridConfig.MinXBoundary, _mapGridConfig.MaxXBoundary),
-                    Random.Range(_mapGridConfig.YBottomBoundary, _mapGridConfig.YTopBoundary)
+                    Random.Range(_mapGridConfig.MinXBoundary, _mapGridConfig.MaxXBoundary), // X within boundaries
+                    Random.Range(_mapGridConfig.YBottomBoundary, _mapGridConfig.YTopBoundary) // Y within boundaries
                 );
             }
 
