@@ -1,7 +1,6 @@
 using UnityEngine;
 using DontWaterMyBurrow.Core;
-using DontWaterMyBurrow.Water.Events;
-using DontWaterMyBurrow.Structures.Events;
+using DontWaterMyBurrow.Structures.State;
 
 namespace DontWaterMyBurrow.Structures
 {
@@ -9,41 +8,37 @@ namespace DontWaterMyBurrow.Structures
     {
         [SerializeField] private int _drainRadius = 2;
         [SerializeField] private float _drainRate = 3f;
-        [SerializeField] private bool _isClogged = false;
 
-        public bool IsClogged => _isClogged;
+        public int DrainRadius => _drainRadius;
+        public float DrainRate => _drainRate;
 
-        public void SetClogState(bool isClogged)
+        private StateMachine _stateMachine;
+        public PumpOperationalState OperationalState { get; private set; }
+        public PumpCloggedState CloggedState { get; private set; }
+        public bool IsClogged => _stateMachine.CurrentState is PumpCloggedState;
+
+        private void Awake()
         {
-            _isClogged = isClogged;
-            EventBus.Publish(new PumpCloggedStateChangedEvent(this.gameObject, _isClogged));
+            _stateMachine = new();
+            OperationalState = new PumpOperationalState(this);
+            CloggedState = new PumpCloggedState(this);
+
+            _stateMachine.ChangeState(OperationalState);
         }
 
         private void Update()
         {
-            PumpWater();
+            _stateMachine.Update();
         }
 
-        private void PumpWater()
+        public void SetClogState(bool isClogged)
         {
-            if (_isClogged)
-            {
-                return;
-            }
-
-            // Drain water in the drain radius 
-            if (_drainRadius > 0 && _drainRate > 0)
-            {
-                var vector = this.gameObject.transform.position;
-                var position = new Vector2Int(Mathf.RoundToInt(vector.x), Mathf.RoundToInt(vector.y));
-                EventBus.Publish(new WaterDrainEvent(position, _drainRate * Time.deltaTime, _drainRadius));
-            }
+            _stateMachine.ChangeState(isClogged ? CloggedState : OperationalState);
         }
 
         public void CleanPump()
         {
-            _isClogged = false;
-            EventBus.Publish(new PumpCloggedStateChangedEvent(this.gameObject, false));
+            _stateMachine.ChangeState(OperationalState);
         }
     }
 }
