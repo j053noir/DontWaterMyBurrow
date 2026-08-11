@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using DontWaterMyBurrow.Core;
@@ -7,6 +6,7 @@ using DontWaterMyBurrow.Structures.Events;
 using DontWaterMyBurrow.Resources.Events;
 using DontWaterMyBurrow.Game.Events;
 using DontWaterMyBurrow.Game;
+using DontWaterMyBurrow.Data;
 
 namespace DontWaterMyBurrow.Building
 {
@@ -31,22 +31,13 @@ namespace DontWaterMyBurrow.Building
 
     public class GridManager : MonoBehaviour
     {
-        [SerializeField] private Vector2Int _burrowPosition;
-
         private Dictionary<Vector2Int, GridObject> _occupiedCells;
+        [SerializeField] private MapGridConfigSO _mapGridConfig;
 
-        [Header("Boundaries")]
-        [SerializeField] private int _minXBoundary;
-        [SerializeField] private int _maxXBoundary;
-        [SerializeField] private int _yBottomBoundary;
-        [SerializeField] private int _yTopBoundary;
-
-        public Vector2Int BurrowPosition => _burrowPosition;
-
-        public int MinXBoundary => _minXBoundary;
-        public int MaxXBoundary => _maxXBoundary;
-        public int YBottomBoundary => _yBottomBoundary;
-        public int YTopBoundary => _yTopBoundary;
+        public int MinXBoundary => _mapGridConfig.MinXBoundary;
+        public int MaxXBoundary => _mapGridConfig.MaxXBoundary;
+        public int YBottomBoundary => _mapGridConfig.YBottomBoundary;
+        public int YTopBoundary => _mapGridConfig.YTopBoundary;
 
         private void Awake()
         {

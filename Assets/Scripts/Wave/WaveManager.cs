@@ -1,4 +1,3 @@
-using DontWaterMyBurrow.Building;
 using DontWaterMyBurrow.Core;
 using DontWaterMyBurrow.Data;
 using DontWaterMyBurrow.Game;
@@ -17,8 +16,8 @@ namespace DontWaterMyBurrow.Wave
         [SerializeField] private float _timeUntilNextWave = 10f;
         [SerializeField] private bool _isWaveActive = false;
 
-        [Header("References")]
-        [SerializeField] private GridManager _gridManager;
+        [Header("Config")]
+        [SerializeField] private MapGridConfigSO _mapGridConfig;
 
         private float _waveTimer = 0f;
         private Dictionary<HazardsSpawnData, float> _hazardTimers;
@@ -115,7 +114,7 @@ namespace DontWaterMyBurrow.Wave
 
         public void SpawnThreat(HazardsSpawnData hazard)
         {
-            var spawnPosition = new Vector3(Random.Range(_gridManager.MinXBoundary, _gridManager.MaxXBoundary), _gridManager.YBottomBoundary, 0);
+            var spawnPosition = new Vector3(Random.Range(_mapGridConfig.MinXBoundary, _mapGridConfig.MaxXBoundary), _mapGridConfig.YBottomBoundary, 0);
             Instantiate(hazard.Prefab, spawnPosition, Quaternion.identity);
             var cellPosition = new Vector2Int(Mathf.RoundToInt(spawnPosition.x), Mathf.RoundToInt(spawnPosition.y));
             EventBus.Publish(new HazardSpawnedEvent(hazard.Type, cellPosition));

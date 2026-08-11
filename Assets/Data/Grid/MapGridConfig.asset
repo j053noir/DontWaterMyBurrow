@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0bcb2f38137c94547997fcf2560f2d05, type: 3}
+  m_Name: MapGridConfig
+  m_EditorClassIdentifier: Assembly-CSharp::DontWaterMyBurrow.Data.MapGridConfigSO
+  <TileSize>k__BackingField: 1
+  <MinXBoundary>k__BackingField: -10
+  <MaxXBoundary>k__BackingField: 10
+  <YBottomBoundary>k__BackingField: -10
+  <YTopBoundary>k__BackingField: 10
+  <BurrowPosition>k__BackingField: {x: 2, y: 2}

@@ -1,19 +1,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 using DontWaterMyBurrow.Core;
-using DontWaterMyBurrow.Building;
 using DontWaterMyBurrow.Structures.Events;
 using DontWaterMyBurrow.Water.Events;
 using DontWaterMyBurrow.Game.Events;
 using DontWaterMyBurrow.Game;
 using DontWaterMyBurrow.Building.Events;
+using DontWaterMyBurrow.Data;
 
 namespace DontWaterMyBurrow.Water
 {
     public class WaterManager : MonoBehaviour
     {
-        [Header("References")]
-        [SerializeField] private GridManager _gridManager;
+        [Header("Config")]
+        [SerializeField] private MapGridConfigSO _mapGridConfig;
 
         [Header("Water Grid")]
         [SerializeField] private Dictionary<Vector2Int, float> _waterGrid;
@@ -24,11 +24,14 @@ namespace DontWaterMyBurrow.Water
         [Header("Water Properties")]
         [SerializeField] private float _globalWaterPressure = 0.33f;
 
+        private HashSet<Vector2Int> _occupiedCells;
+
         private void Awake()
         {
             _waterGrid = new();
             _channelDirections = new();
             _drainCells = new();
+            _occupiedCells = new();
             _waterFlowVectors = new()
         {
             Vector2Int.up,
@@ -161,9 +164,9 @@ namespace DontWaterMyBurrow.Water
                 }
 
                 // Check if water has reached the burrow position
-                if (waterKvP.Key == _gridManager.BurrowPosition)
+                if (waterKvP.Key == _mapGridConfig.BurrowPosition)
                 {
-                    var inflow = CheckWaterAtSurroundingCells(_gridManager.BurrowPosition);
+                    var inflow = CheckWaterAtSurroundingCells(_mapGridConfig.BurrowPosition);
                     EventBus.Publish(new WaterReachedBurrowEvent(inflow));
                 }
             }
@@ -171,7 +174,7 @@ namespace DontWaterMyBurrow.Water
 
         public bool MoveWater(Vector2Int fromPosition, Vector2Int toPosition)
         {
-            if (!_gridManager.IsCellOccupied(toPosition))
+            if (!IsCellOccupied(toPosition))
             {
                 _waterGrid[toPosition] = Mathf.Clamp(_waterGrid[toPosition] + _globalWaterPressure, 0f, 1f);
                 _waterGrid[fromPosition] -= _globalWaterPressure;
@@ -187,10 +190,10 @@ namespace DontWaterMyBurrow.Water
         /// </summary>
         private void GenerateNewWater()
         {
-            for (int i = _gridManager.MinXBoundary; i < _gridManager.MaxXBoundary; i++)
+            for (int i = _mapGridConfig.MinXBoundary; i < _mapGridConfig.MaxXBoundary; i++)
             {
-                var position = new Vector2Int(i, _gridManager.YBottomBoundary);
-                if (!_gridManager.IsCellOccupied(position))
+                var position = new Vector2Int(i, _mapGridConfig.YBottomBoundary);
+                if (!IsCellOccupied(position))
                 {
                     // Increase water level, but don't exceed 100%
                     _waterGrid[position] = Mathf.Clamp(_waterGrid[position] + _globalWaterPressure, 0f, 1f);
@@ -233,7 +236,7 @@ namespace DontWaterMyBurrow.Water
 
         public bool IsCellOccupied(Vector2Int position)
         {
-            return _gridManager.IsCellOccupied(position);
+            return _occupiedCells.Contains(position);
         }
 
         public bool IsCellFlooded(Vector2Int gridPosition)
