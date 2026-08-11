@@ -114,6 +114,18 @@ namespace DontWaterMyBurrow.Wave
 
         public void SpawnThreat(HazardsSpawnData hazard)
         {
+            if (hazard.Prefab == null)
+            {
+                Debug.LogError("[WaveManager] Cannot spawn threat: Hazard Prefab is null!");
+                return;
+            }
+
+            if (_mapGridConfig == null)
+            {
+                Debug.LogError("[WaveManager] _mapGridConfig is not assigned in the Inspector!");
+                return;
+            }
+
             var spawnPosition = new Vector3(Random.Range(_mapGridConfig.MinXBoundary, _mapGridConfig.MaxXBoundary), _mapGridConfig.YBottomBoundary, 0);
             Instantiate(hazard.Prefab, spawnPosition, Quaternion.identity);
             var cellPosition = new Vector2Int(Mathf.RoundToInt(spawnPosition.x), Mathf.RoundToInt(spawnPosition.y));
