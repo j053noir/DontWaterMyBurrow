@@ -11,6 +11,7 @@ using DontWaterMyBurrow.Resources.Events;
 using DontWaterMyBurrow.Player.States;
 using DontWaterMyBurrow.Game.Events;
 using DontWaterMyBurrow.Game;
+using DontWaterMyBurrow.Data;
 
 namespace DontWaterMyBurrow.Player
 {
@@ -19,6 +20,9 @@ namespace DontWaterMyBurrow.Player
     [RequireComponent(typeof(PlayerInput))]
     public class PlayerController : MonoBehaviour
     {
+        [Header("Config")]
+        [SerializeField] private MapGridConfigSO _mapGridConfig;
+
         [Header("Movement")]
         [SerializeField] private float _baseMoveSpeed = 5f;
         [SerializeField] private float _currentMoveSpeed = 5f;
@@ -74,8 +78,21 @@ namespace DontWaterMyBurrow.Player
 
         private void FixedUpdate()
         {
-            _rigidBody2d.MovePosition(_rigidBody2d.position + _currentMoveSpeed * Time.fixedDeltaTime * _moveInput);
+            PlayerMove();
             StateMachine.FixedUpdate();
+        }
+
+        private void PlayerMove()
+        {
+            Vector2 nextPosition = _rigidBody2d.position + _moveInput * (_currentMoveSpeed * Time.fixedDeltaTime);
+
+            if (_mapGridConfig != null)
+            {
+                nextPosition.x = Mathf.Clamp(nextPosition.x, _mapGridConfig.MinXBoundary, _mapGridConfig.MaxXBoundary);
+                nextPosition.y = Mathf.Clamp(nextPosition.y, _mapGridConfig.YBottomBoundary, _mapGridConfig.YTopBoundary);
+            }
+
+            _rigidBody2d.MovePosition(nextPosition);
         }
 
         private void OnGameStateChanged(GameStateChangedEvent @event)
@@ -130,7 +147,20 @@ namespace DontWaterMyBurrow.Player
 
         public void OnMove(InputValue value)
         {
-            _moveInput = value.Get<Vector2>();
+            var rawInput = value.Get<Vector2>();
+
+            if (Mathf.Abs(rawInput.y) > 0.01f && Mathf.Abs(rawInput.y) >= Mathf.Abs(rawInput.x))
+            {
+                _moveInput = new Vector2(0f, Mathf.Sign(rawInput.y));
+            }
+            else if (Mathf.Abs(rawInput.x) > 0.01f)
+            {
+                _moveInput = new Vector2(Mathf.Sign(rawInput.x), 0f);
+            }
+            else
+            {
+                _moveInput = Vector2.zero;
+            }
 
             if (_moveInput.sqrMagnitude > 0.01f)
             {
