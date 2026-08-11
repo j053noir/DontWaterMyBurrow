@@ -229,7 +229,7 @@ namespace DontWaterMyBurrow.UI
 
             _root.style.display = DisplayStyle.None;
 
-            if (@event.NewState == GameState.WaveActive || @event.NewState == GameState.GamePlay)
+            if (@event.NewState == GameState.WaveActive || @event.NewState == GameState.WavePreparation)
             {
                 _root.style.display = DisplayStyle.Flex;
                 if (_waveTimerWrapper is not null) _waveTimerWrapper.style.display = DisplayStyle.Flex;

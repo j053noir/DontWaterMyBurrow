@@ -46,10 +46,18 @@ namespace DontWaterMyBurrow.UI
             _root.style.display = DisplayStyle.None;
 
             _startButton = _root.Q<VisualElement>("start-button")?.Q<Button>("button");
-            if (_startButton != null) _startButton.clicked += OnStartButtonPressed;
+            if (_startButton != null)
+            {
+                _startButton.text = "START";
+                _startButton.clicked += OnStartButtonPressed;
+            }
 
             _quitButton = _root.Q<VisualElement>("quit-button")?.Q<Button>("button");
-            if (_quitButton != null) _quitButton.clicked += OnQuitButtonPressed;
+            if (_quitButton != null)
+            {
+                _quitButton.text = "QUIT";
+                _quitButton.clicked += OnQuitButtonPressed;
+            }
         }
 
         private void UnbindButtons()
@@ -60,7 +68,7 @@ namespace DontWaterMyBurrow.UI
 
         private void OnStartButtonPressed()
         {
-            EventBus.Publish(new GameStateChangedEvent(GameState.GamePlay));
+            EventBus.Publish(new GameStateChangedEvent(GameState.WavePreparation));
         }
 
         private void OnQuitButtonPressed()
