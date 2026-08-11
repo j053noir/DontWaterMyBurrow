@@ -1,16 +1,16 @@
-using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using DontWaterMyBurrow.Core;
-using DontWaterMyBurrow.Game;
-using DontWaterMyBurrow.Game.Events;
 using DontWaterMyBurrow.Player.Events;
 using DontWaterMyBurrow.Building.Events;
 using DontWaterMyBurrow.Structures;
 using DontWaterMyBurrow.Structures.Events;
 using DontWaterMyBurrow.Resources;
 using DontWaterMyBurrow.Resources.Events;
+using DontWaterMyBurrow.Player.States;
+using DontWaterMyBurrow.Game.Events;
+using DontWaterMyBurrow.Game;
 
 namespace DontWaterMyBurrow.Player
 {
@@ -27,16 +27,27 @@ namespace DontWaterMyBurrow.Player
         [SerializeField] private Vector2Int _targetCell;
         [SerializeField] private int _repairAmount = 10;
 
-        public Vector2Int TargetCell => _targetCell;
-
-        [Header("State")]
-        [SerializeField] private bool _isOnMud = false;
-
         private Rigidbody2D _rigidBody2d;
+
+        public StateMachine StateMachine;
+        public PlayerDisabledState DisabledState { get; private set; }
+        public PlayerNormalState NormalState { get; private set; }
+        public PlayerMudState MudState { get; private set; }
+        public PlayerUncloggingState UncloggingState { get; private set; }
 
         private void Awake()
         {
+            StateMachine = new();
+            DisabledState = new PlayerDisabledState(this);
+            NormalState = new PlayerNormalState(this, _baseMoveSpeed);
+            MudState = new PlayerMudState(this, _baseMoveSpeed * 0.5f);
+
             _rigidBody2d = GetComponent<Rigidbody2D>();
+        }
+
+        private void Start()
+        {
+            StateMachine.ChangeState(DisabledState);
         }
 
         private void OnEnable()
@@ -51,9 +62,61 @@ namespace DontWaterMyBurrow.Player
             EventBus.Unsubscribe<PlayerOnMudEvent>(OnPlayerOnMudEvent);
         }
 
+        private void Update()
+        {
+            StateMachine.Update();
+        }
+
         private void FixedUpdate()
         {
             _rigidBody2d.MovePosition(_rigidBody2d.position + _currentMoveSpeed * Time.fixedDeltaTime * _moveInput);
+            StateMachine.FixedUpdate();
+        }
+
+        private void OnGameStateChanged(GameStateChangedEvent @event)
+        {
+            if (@event.NewState == GameState.MainMenu || @event.NewState == GameState.GameOver || @event.NewState == GameState.Victory)
+            {
+                StateMachine.ChangeState(DisabledState);
+            }
+            else if (@event.NewState == GameState.GamePlay || @event.NewState == GameState.WavePreparation)
+            {
+                StateMachine.ChangeState(NormalState);
+            }
+        }
+
+        private void OnPlayerOnMudEvent(PlayerOnMudEvent @event)
+        {
+            StateMachine.ChangeState(@event.OnMud ? MudState : NormalState);
+        }
+
+        private Vector2Int TargetCell()
+        {
+            var currentCell = new Vector2Int(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y));
+            var facingCell = new Vector2Int(Mathf.RoundToInt(_facingDirection.x), Mathf.RoundToInt(_facingDirection.y));
+
+            return currentCell + facingCell;
+        }
+
+        public void SetMoveSpeed(float moveSpeed)
+        {
+            _currentMoveSpeed = moveSpeed;
+        }
+
+        private void OnTriggerEnter2D(Collider2D collision)
+        {
+            if (collision.CompareTag("Mud"))
+            {
+                EventBus.Publish(new PlayerOnMudEvent(true));
+            }
+        }
+
+        private void OnTriggerExit2D(Collider2D collision)
+        {
+            if (collision.CompareTag("Mud"))
+            {
+                EventBus.Publish(new PlayerOnMudEvent(false));
+            }
         }
 
         public void OnMove(InputValue value)
@@ -64,7 +127,7 @@ namespace DontWaterMyBurrow.Player
             {
                 _facingDirection = _moveInput.normalized;
 
-                var targetCell = this.targetCell();
+                var targetCell = this.TargetCell();
 
                 if (_targetCell != targetCell)
                 {
@@ -100,14 +163,16 @@ namespace DontWaterMyBurrow.Player
                 {
                     if (waterPump.IsClogged)
                     {
-                        StartCoroutine(UnclogWaterPump(waterPump));
+                        UncloggingState = new PlayerUncloggingState(this, StateMachine.CurrentState, 1f, waterPump.gameObject);
+                        StateMachine.ChangeState(UncloggingState);
                     }
                 }
                 else if (hit.gameObject.TryGetComponent(out DrainController drain))
                 {
                     if (drain.IsClogged)
                     {
-                        StartCoroutine(UnclogDrain(drain));
+                        UncloggingState = new PlayerUncloggingState(this, StateMachine.CurrentState, 1f, drain.gameObject);
+                        StateMachine.ChangeState(UncloggingState);
                     }
                 }
                 else if (hit.gameObject.TryGetComponent(out ResourceNodeController resourceNode))
@@ -120,85 +185,13 @@ namespace DontWaterMyBurrow.Player
             }
         }
 
-        private IEnumerator UnclogWaterPump(WaterPumpController waterPump)
-        {
-            // TODO: Do unclogging animation, SFX, particles
-
-            yield return new WaitForSeconds(1f);
-
-            waterPump.SetClogState(false);
-        }
-
-        private IEnumerator UnclogDrain(DrainController drain)
-        {
-            // TODO: Do unclogging animation, SFX, particles
-
-            yield return new WaitForSeconds(1f);
-
-            drain.SetClogState(false);
-        }
-
         public void OnBuild(InputValue value)
         {
             if (!value.isPressed) return;
 
-            var targetBuildCell = targetCell();
+            var targetBuildCell = TargetCell();
 
             EventBus.Publish(new ConfirmBuildEvent(targetBuildCell));
-        }
-
-        private Vector2Int targetCell()
-        {
-            var currentCell = new Vector2Int(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y));
-            var facingCell = new Vector2Int(Mathf.RoundToInt(_facingDirection.x), Mathf.RoundToInt(_facingDirection.y));
-
-            return currentCell + facingCell;
-        }
-
-        private void OnGameStateChanged(GameStateChangedEvent @event)
-        {
-            if (@event.NewState == GameState.MainMenu || @event.NewState == GameState.GameOver || @event.NewState == GameState.Victory)
-            {
-                // TODO: Bloquear movimiento.
-                _currentMoveSpeed = 0;
-                _isOnMud = false;
-            }
-            else if (@event.NewState == GameState.GamePlay || @event.NewState == GameState.WavePreparation)
-            {
-                // TODO: Habilitar movimiento.
-                SetMoveSpeed();
-            }
-        }
-
-        private void OnPlayerOnMudEvent(PlayerOnMudEvent @event)
-        {
-            _isOnMud = @event.OnMud;
-            SetMoveSpeed();
-        }
-
-        private void SetMoveSpeed()
-        {
-            _currentMoveSpeed = _isOnMud ? _baseMoveSpeed * 0.5f : _baseMoveSpeed;
-        }
-
-        private void OnTriggerEnter2D(Collider2D collision)
-        {
-            if (collision.CompareTag("Mud"))
-            {
-                _isOnMud = true;
-                EventBus.Publish(new PlayerOnMudEvent(true));
-                SetMoveSpeed();
-            }
-        }
-
-        private void OnTriggerExit2D(Collider2D collision)
-        {
-            if (collision.CompareTag("Mud"))
-            {
-                _isOnMud = false;
-                EventBus.Publish(new PlayerOnMudEvent(false));
-                SetMoveSpeed();
-            }
         }
     }
 }
