@@ -493,9 +493,8 @@ MonoBehaviour:
   _firstWaveData: {fileID: 0}
   _currentWaveData: {fileID: 11400000, guid: 78d03817d4269a2438f2501d13f42802, type: 2}
   _timeUntilNextWave: 10
-  _isWaveActive: 0
   _mapGridConfig: {fileID: 11400000, guid: a627ba1f0afad054f998a3e9a4a03019, type: 2}
-  _debugMode: 0
+  debugMode: 0
 --- !u!1 &331206408
 GameObject:
   m_ObjectHideFlags: 0
@@ -1021,7 +1020,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &830629542
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1301,7 +1300,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DontWaterMyBurrow.Building.GridVisualOverlay
   _mapGridConfig: {fileID: 11400000, guid: a627ba1f0afad054f998a3e9a4a03019, type: 2}
-  _tileSprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  _tileSprite: {fileID: 21300000, guid: 0b4883a3b6aaaf247b4afa2534cf1583, type: 3}
   _gridColor: {r: 1, g: 1, b: 1, a: 0.15}
   _sortingLayerName: Default
   _sortingOrder: -1
@@ -1680,9 +1679,37 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1707021323}
     m_Modifications:
+    - target: {fileID: 1216239987589212627, guid: 622435d3f37416e45b3f58d7ad9824e8, type: 3}
+      propertyPath: m_Size.x
+      value: 1.28
+      objectReference: {fileID: 0}
+    - target: {fileID: 1216239987589212627, guid: 622435d3f37416e45b3f58d7ad9824e8, type: 3}
+      propertyPath: m_Size.y
+      value: 1.28
+      objectReference: {fileID: 0}
+    - target: {fileID: 1216239987589212627, guid: 622435d3f37416e45b3f58d7ad9824e8, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 1fcd6192f62d2914284a7ce91281ed97, type: 3}
+    - target: {fileID: 1216239987589212627, guid: 622435d3f37416e45b3f58d7ad9824e8, type: 3}
+      propertyPath: m_SortingOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1216239987589212627, guid: 622435d3f37416e45b3f58d7ad9824e8, type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1372484701566004862, guid: 622435d3f37416e45b3f58d7ad9824e8, type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 1372484701566004862, guid: 622435d3f37416e45b3f58d7ad9824e8, type: 3}
+      propertyPath: m_TagString
+      value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 3652447336418037129, guid: 622435d3f37416e45b3f58d7ad9824e8, type: 3}
+      propertyPath: m_Constraints
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 5777208243858201819, guid: 622435d3f37416e45b3f58d7ad9824e8, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1724,6 +1751,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6905761386865936225, guid: 622435d3f37416e45b3f58d7ad9824e8, type: 3}
+      propertyPath: _mapGridConfig
+      value: 
+      objectReference: {fileID: 11400000, guid: a627ba1f0afad054f998a3e9a4a03019, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
