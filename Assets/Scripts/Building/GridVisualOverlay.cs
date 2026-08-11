@@ -57,7 +57,7 @@ namespace DontWaterMyBurrow.Building
                     {
                         float sprideWidth = _tileSprite.bounds.size.x;
                         float sprideHeight = _tileSprite.bounds.size.y;
-                        //tile.transform.localScale = new Vector3(sprideWidth / _mapGridConfig.TileSize, sprideHeight / _mapGridConfig.TileSize, 1);
+                        tile.transform.localScale = new Vector3(_mapGridConfig.TileSize / sprideWidth, _mapGridConfig.TileSize / sprideHeight, 1);
                         var spriteRenderer = tile.AddComponent<SpriteRenderer>();
                         spriteRenderer.sprite = _tileSprite;
                         spriteRenderer.color = _gridColor;
