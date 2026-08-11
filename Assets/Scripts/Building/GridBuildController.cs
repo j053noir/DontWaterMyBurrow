@@ -25,6 +25,7 @@ namespace DontWaterMyBurrow.Building
         private void OnEnable()
         {
             EventBus.Subscribe<GameStateChangedEvent>(OnGameStateChanged);
+            EventBus.Subscribe<SelectStructureToBuildEvent>(OnSelectStructureToBuild);
             EventBus.Subscribe<PlayerBuildTargetChangedEvent>(OnPlayerBuildTargetChanged);
             EventBus.Subscribe<ConfirmBuildEvent>(OnConfirmBuild);
         }
@@ -32,6 +33,7 @@ namespace DontWaterMyBurrow.Building
         private void OnDisable()
         {
             EventBus.Unsubscribe<GameStateChangedEvent>(OnGameStateChanged);
+            EventBus.Unsubscribe<SelectStructureToBuildEvent>(OnSelectStructureToBuild);
             EventBus.Unsubscribe<PlayerBuildTargetChangedEvent>(OnPlayerBuildTargetChanged);
             EventBus.Unsubscribe<ConfirmBuildEvent>(OnConfirmBuild);
         }
@@ -42,10 +44,16 @@ namespace DontWaterMyBurrow.Building
             {
                 _canBuild = false;
             }
-            else if (@event.NewState == GameState.GamePlay || @event.NewState == GameState.WavePreparation)
+            else if (@event.NewState == GameState.WavePreparation || @event.NewState == GameState.WaveActive)
             {
                 _canBuild = true;
             }
+        }
+
+        private void OnSelectStructureToBuild(SelectStructureToBuildEvent @event)
+        {
+            _selectedStructureSO = @event.StructureData;
+            ValidateBuildPosition(_buildPosition, _selectedStructureSO);
         }
 
         private void OnPlayerBuildTargetChanged(PlayerBuildTargetChangedEvent @event)
@@ -56,7 +64,7 @@ namespace DontWaterMyBurrow.Building
 
         public void ValidateBuildPosition(Vector2Int gridPosition, StructureDataSO structureSO)
         {
-            if (!_canBuild)
+            if (!_canBuild || structureSO == null)
             {
                 SetPreviewState(isValid: false);
                 return;
@@ -72,6 +80,8 @@ namespace DontWaterMyBurrow.Building
         {
             _isValid = isValid;
 
+            if (_selectedStructureSO == null) return;
+
             _structurePreview.color = isValid ? _validColor : _invalidColor;
             _structurePreview.sprite = _selectedStructureSO.PreviewSprite;
             _structurePreview.transform.position = GetBuildPosition();
@@ -80,7 +90,7 @@ namespace DontWaterMyBurrow.Building
 
         public void OnConfirmBuild(ConfirmBuildEvent @event)
         {
-            if (!_canBuild || !_isValid) return;
+            if (!_canBuild || !_isValid || !_selectedStructureSO) return;
 
             _buildPosition = @event.Position;
             var gameObject = Instantiate(_selectedStructureSO.Prefab, GetBuildPosition(), Quaternion.identity);
