@@ -6,6 +6,8 @@ namespace DontWaterMyBurrow.Core
     {
         private IState _currentState;
 
+        public IState CurrentState => _currentState;
+
         public void ChangeState(IState newState)
         {
             if (_currentState == newState) return;
@@ -22,12 +24,18 @@ namespace DontWaterMyBurrow.Core
 
         public void Update()
         {
-            _currentState?.Update();
+            if (_currentState is IUpdateableState updateableState)
+            {
+                updateableState.Update();
+            }
         }
 
         public void FixedUpdate()
         {
-            _currentState?.FixedUpdate();
+            if (_currentState is IFixedUpdateableState fixedUpdateableState)
+            {
+                fixedUpdateableState.FixedUpdate();
+            }
         }
     }
 }
