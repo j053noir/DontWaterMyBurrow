@@ -179,8 +179,19 @@ namespace DontWaterMyBurrow.Water
         {
             if (!IsCellOccupied(toPosition))
             {
-                _waterGrid[toPosition] = Mathf.Clamp(_waterGrid[toPosition] + _globalWaterPressure, 0f, 1f);
-                _waterGrid[fromPosition] -= _globalWaterPressure;
+                _waterGrid.TryGetValue(toPosition, out float currentToLevel);
+                _waterGrid[toPosition] = Mathf.Clamp(currentToLevel + _globalWaterPressure, 0f, 1f);
+
+                _waterGrid.TryGetValue(fromPosition, out float currentFromLevel);
+                float newFromLevel = currentFromLevel - _globalWaterPressure;
+                if (newFromLevel <= 0f)
+                {
+                    _waterGrid.Remove(fromPosition);
+                }
+                else
+                {
+                    _waterGrid[fromPosition] = newFromLevel;
+                }
 
                 return true;
             }
