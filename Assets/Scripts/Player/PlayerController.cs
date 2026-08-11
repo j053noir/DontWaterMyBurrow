@@ -16,6 +16,7 @@ namespace DontWaterMyBurrow.Player
 {
     [RequireComponent(typeof(Rigidbody2D))]
     [RequireComponent(typeof(Collider2D))]
+    [RequireComponent(typeof(PlayerInput))]
     public class PlayerController : MonoBehaviour
     {
         [Header("Movement")]
@@ -75,12 +76,16 @@ namespace DontWaterMyBurrow.Player
 
         private void OnGameStateChanged(GameStateChangedEvent @event)
         {
-            if (@event.NewState == GameState.MainMenu || @event.NewState == GameState.GameOver || @event.NewState == GameState.Victory)
+            if (@event.NewState == GameState.MainMenu ||
+                @event.NewState == GameState.GameOver ||
+                @event.NewState == GameState.Victory ||
+                @event.NewState == GameState.Pause)
             {
                 StateMachine.ChangeState(DisabledState);
             }
-            else if (@event.NewState == GameState.GamePlay || @event.NewState == GameState.WavePreparation)
+            else if (@event.NewState == GameState.WavePreparation || @event.NewState == GameState.WaveActive)
             {
+                Debug.Log($"[PlayerController] Game state changed to {@event.NewState}, Time Scale: {Time.timeScale}");
                 StateMachine.ChangeState(NormalState);
             }
         }
