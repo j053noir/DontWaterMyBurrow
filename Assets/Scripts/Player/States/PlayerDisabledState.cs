@@ -14,13 +14,13 @@ namespace DontWaterMyBurrow.Player.States
 
         public void Enter()
         {
-            Debug.Log("Enter from Player Disabled State");
+            if (_player.DebugMode) Debug.Log("Enter from Player Disabled State");
             _player.SetMoveSpeed(0f);
         }
 
         public void Exit()
         {
-            Debug.Log("Exit from Player Disabled State");
+            if (_player.DebugMode) Debug.Log("Exit from Player Disabled State");
         }
     }
 }

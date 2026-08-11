@@ -22,7 +22,7 @@ namespace DontWaterMyBurrow.Player.States
 
         public void Enter()
         {
-            Debug.Log("Enter from Player Unclogging State");
+            if (_player.DebugMode) Debug.Log("Enter from Player Unclogging State");
 
             _uncloggingTimer = _uncloggingDuration;
             _player.SetMoveSpeed(0f);
@@ -32,7 +32,7 @@ namespace DontWaterMyBurrow.Player.States
 
         public void Exit()
         {
-            Debug.Log("Exit from Player Unclogging State");
+            if (_player.DebugMode) Debug.Log("Exit from Player Unclogging State");
 
             // TODO: Publish event to stop unclogging (animation, sfx, particles)
         }

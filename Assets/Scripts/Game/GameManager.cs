@@ -27,6 +27,10 @@ namespace DontWaterMyBurrow.Game
         [SerializeField] private int _currentWave = 0;
         public int CurrentWave => _currentWave;
 
+        [Header("Debug")]
+        [SerializeField] private bool _debugMode = false;
+        public bool DebugMode => _debugMode;
+
         private HashSet<Type> _knownManagers;
         private HashSet<Type> _readyManagers;
 

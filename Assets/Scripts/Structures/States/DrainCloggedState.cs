@@ -16,7 +16,7 @@ namespace DontWaterMyBurrow.Structures.State
 
         public void Enter()
         {
-            Debug.Log("Enter from Drain Clogged State");
+            if (_drain.DebugMode) Debug.Log("Enter from Drain Clogged State");
             EventBus.Publish(new RemoveWaterDrainEvent(_drain.Position));
 
             // Add event to alert user to clean the drain
@@ -24,9 +24,14 @@ namespace DontWaterMyBurrow.Structures.State
 
         public void Exit()
         {
-            Debug.Log("Exit from Drain Clogged State");
+            if (_drain.DebugMode) Debug.Log("Exit from Drain Clogged State");
 
             // Remove event to alert user to clean the drain
+        }
+
+        public void Update()
+        {
+            if (_drain.DebugMode) Debug.Log("Update from Drain Clogged State");
         }
     }
 }

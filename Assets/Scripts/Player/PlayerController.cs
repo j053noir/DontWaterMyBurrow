@@ -28,6 +28,10 @@ namespace DontWaterMyBurrow.Player
         [SerializeField] private Vector2Int _targetCell;
         [SerializeField] private int _repairAmount = 10;
 
+        [Header("Debug")]
+        [SerializeField] private bool _debugMode = false;
+        public bool DebugMode => _debugMode;
+
         private Rigidbody2D _rigidBody2d;
 
         public StateMachine StateMachine;
@@ -159,7 +163,7 @@ namespace DontWaterMyBurrow.Player
                         EventBus.Publish(new RepairStructureRequestEvent(structure.Position, structure.DataSO, (success) =>
                         {
                             if (success) structure.Repair(_repairAmount);
-                            else Debug.LogWarning("Can't repair. Player doesn't have enough resources.");
+                            else if (_debugMode) Debug.LogWarning("Can't repair. Player doesn't have enough resources.");
                         }));
                     }
                 }

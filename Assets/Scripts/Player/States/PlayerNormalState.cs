@@ -16,14 +16,14 @@ namespace DontWaterMyBurrow.Player.States
 
         public void Enter()
         {
-            Debug.Log("Enter from Player Normal State");
+            if (_player.DebugMode) Debug.Log("Enter from Player Normal State");
 
             _player.SetMoveSpeed(_moveSpeed);
         }
 
         public void Exit()
         {
-            Debug.Log("Exit from Player Normal State");
+            if (_player.DebugMode) Debug.Log("Exit from Player Normal State");
         }
     }
 }

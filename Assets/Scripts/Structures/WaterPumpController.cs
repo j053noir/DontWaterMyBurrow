@@ -12,6 +12,10 @@ namespace DontWaterMyBurrow.Structures
         public int DrainRadius => _drainRadius;
         public float DrainRate => _drainRate;
 
+        [Header("Debug")]
+        [SerializeField] private bool _debugMode = false;
+        public bool DebugMode => _debugMode;
+
         private StateMachine _stateMachine;
         public PumpOperationalState OperationalState { get; private set; }
         public PumpCloggedState CloggedState { get; private set; }

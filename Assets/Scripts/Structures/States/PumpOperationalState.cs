@@ -17,7 +17,7 @@ namespace DontWaterMyBurrow.Structures.State
 
         public void Enter()
         {
-            Debug.Log("Enter from Pump Operational State");
+            if (_waterPump.DebugMode) Debug.Log("Enter from Pump Operational State");
             EventBus.Publish(new PumpCloggedStateChangedEvent(_waterPump.gameObject, false));
 
             // TODO: Show drain particles
@@ -25,14 +25,14 @@ namespace DontWaterMyBurrow.Structures.State
 
         public void Exit()
         {
-            Debug.Log("Exit from Pump Operational State");
+            if (_waterPump.DebugMode) Debug.Log("Exit from Pump Operational State");
 
             // TODO: Hide drain particles
         }
 
         public void Update()
         {
-            Debug.Log("Update from Pump Operational State");
+            if (_waterPump.DebugMode) Debug.Log("Update from Pump Operational State");
 
             var vector = _waterPump.gameObject.transform.position;
             var position = new Vector2Int(Mathf.RoundToInt(vector.x), Mathf.RoundToInt(vector.y));

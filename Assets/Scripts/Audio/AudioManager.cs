@@ -15,6 +15,8 @@ namespace DontWaterMyBurrow.Audio
         [Header("Game State Music")]
         [SerializeField] private List<StateAudioSO> _stateMusics;
 
+        [SerializeField] private bool _debugMode = false;
+
         private void OnEnable()
         {
             EventBus.Subscribe<GameStateChangedEvent>(OnGameStateChanged);
@@ -33,7 +35,7 @@ namespace DontWaterMyBurrow.Audio
 
             if (stateMusic == null || stateMusic.AudioClip == null)
             {
-                Debug.LogError("AudioManager: No music found for game state: " + @event.NewState);
+                if (_debugMode) Debug.LogError("AudioManager: No music found for game state: " + @event.NewState);
                 _musicAudioSource.Stop();
                 return;
             }

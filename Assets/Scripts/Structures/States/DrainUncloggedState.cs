@@ -16,7 +16,7 @@ namespace DontWaterMyBurrow.Structures.State
 
         public void Enter()
         {
-            Debug.Log("Enter from Drain Unclogged State");
+            if (_drain.DebugMode) Debug.Log("Enter from Drain Unclogged State");
             EventBus.Publish(new RegisterWaterDrainEvent(_drain.Position, _drain.DrainRadius, _drain.DrainAmount));
 
             // TODO: Start water drain animation
@@ -25,7 +25,7 @@ namespace DontWaterMyBurrow.Structures.State
 
         public void Exit()
         {
-            Debug.Log("Exit from Drain Unclogged State");
+            if (_drain.DebugMode) Debug.Log("Exit from Drain Unclogged State");
             EventBus.Publish(new RemoveWaterDrainEvent(_drain.Position));
 
             // TODO: Stop water drain animation

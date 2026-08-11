@@ -75,6 +75,9 @@ namespace DontWaterMyBurrow.UI
         [Header("Flood Level")]
         private ProgressBar _floodProgressBar;
 
+        [Header("Debug")]
+        [SerializeField] private bool _debugMode = false;
+
         private void Awake()
         {
             _resourceCounters = new();
@@ -106,7 +109,7 @@ namespace DontWaterMyBurrow.UI
 
         private void OnGameStateChanged(GameStateChangedEvent @event)
         {
-            ToggleHUDElements(@event);
+            ToggleHUDElements(@event.NewState);
         }
 
         private void OnBurrowFloodLevelChanged(BurrowFloodUpdatedEvent @event)
@@ -145,8 +148,8 @@ namespace DontWaterMyBurrow.UI
         {
             if (_hudDocument == null && !TryGetComponent(out _hudDocument)) Debug.LogError("HUDController: No UIDocument found");
 
-            _hudDocument.rootVisualElement.style.display = DisplayStyle.None;
             _root = _hudDocument.rootVisualElement;
+            _root.style.display = DisplayStyle.None;
 
             // Initialize resource counters
             #region Resource Counters
@@ -155,15 +158,19 @@ namespace DontWaterMyBurrow.UI
             foreach (var type in Enum.GetValues(typeof(ResourceType)))
             {
                 var typeName = type.ToString().ToLower();
-                Debug.Log("Initializing resource counter for: " + typeName);
+                if (_debugMode) Debug.Log("Initializing resource counter for: " + typeName);
 
                 var resourceCounterLabel = _root.Q<VisualElement>($"resource-counter-{typeName}")?.Q<Label>("resource-quantity");
                 if (resourceCounterLabel == null)
-                    Debug.LogError("HUDController: No resource counter found for: " + typeName);
+                {
+                    if (_debugMode) Debug.LogError("HUDController: No resource counter found for: " + typeName);
+                }
                 else
+                {
                     _resourceUILabels.Add(new ResourceUILabels { ResourceType = typeName, ResourceLabel = resourceCounterLabel });
+                }
 
-                Debug.Log("Resource counter initialized for: " + typeName);
+                if (_debugMode) Debug.Log("Resource counter initialized for: " + typeName);
             }
             #endregion
 
@@ -223,21 +230,25 @@ namespace DontWaterMyBurrow.UI
         /// Toggles HUD elements based on the current game state
         /// </summary>
         /// <param name="@event">The game state changed event</param>
-        private void ToggleHUDElements(GameStateChangedEvent @event)
+        private void ToggleHUDElements(GameState state)
         {
             if (_root == null) return;
 
             _root.style.display = DisplayStyle.None;
 
-            if (@event.NewState == GameState.WaveActive || @event.NewState == GameState.WavePreparation)
+            if (_debugMode) Debug.Log("Game State: " + state);
+
+            if (state == GameState.WaveActive)
             {
                 _root.style.display = DisplayStyle.Flex;
+                if (_debugMode) Debug.Log($"Wave Active, wave timer display: {_waveTimerWrapper.style.display}");
                 if (_waveTimerWrapper is not null) _waveTimerWrapper.style.display = DisplayStyle.Flex;
                 if (_nextWaveTimerWrapper is not null) _nextWaveTimerWrapper.style.display = DisplayStyle.None;
             }
-            else if (@event.NewState == GameState.WavePreparation)
+            else if (state == GameState.WavePreparation)
             {
                 _root.style.display = DisplayStyle.Flex;
+                if (_debugMode) Debug.Log($"Wave Preparation, wave timer display: {_waveTimerWrapper.style.display}");
                 if (_waveTimerWrapper is not null) _waveTimerWrapper.style.display = DisplayStyle.None;
                 if (_nextWaveTimerWrapper is not null) _nextWaveTimerWrapper.style.display = DisplayStyle.Flex;
             }

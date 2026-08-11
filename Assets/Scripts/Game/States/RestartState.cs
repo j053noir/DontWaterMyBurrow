@@ -16,7 +16,7 @@ namespace DontWaterMyBurrow.Game.States
 
         public void Enter()
         {
-            Debug.Log("Enter from Restart State");
+            if (_gameManager.DebugMode) Debug.Log("Enter from Restart State");
             Time.timeScale = 0f;
 
             _gameManager.ResetGame();
@@ -25,7 +25,7 @@ namespace DontWaterMyBurrow.Game.States
 
         public void Exit()
         {
-            Debug.Log("Exit from Restart State");
+            if (_gameManager.DebugMode) Debug.Log("Exit from Restart State");
             Time.timeScale = 1f;
         }
     }

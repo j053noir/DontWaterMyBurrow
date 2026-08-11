@@ -16,7 +16,7 @@ namespace DontWaterMyBurrow.Game.States
 
         public void Enter()
         {
-            Debug.Log("Enter from Wave Preparation State");
+            if (_gameManager.DebugMode) Debug.Log("Enter from Wave Preparation State");
             Time.timeScale = 1f;
 
             // TODO: Play preparation music
@@ -26,7 +26,7 @@ namespace DontWaterMyBurrow.Game.States
 
         public void Exit()
         {
-            Debug.Log("Exit from Wave Preparation State");
+            if (_gameManager.DebugMode) Debug.Log("Exit from Wave Preparation State");
 
             // TODO: Stop preparation music
         }

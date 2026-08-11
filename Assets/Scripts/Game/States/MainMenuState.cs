@@ -9,7 +9,7 @@ namespace DontWaterMyBurrow.Game.States
     {
         public void Enter()
         {
-            Debug.Log("Enter from Main Menu State");
+            // Enter MainMenuState
             Time.timeScale = 0f;
 
             // TODO: Play main menu music in loop
@@ -19,7 +19,6 @@ namespace DontWaterMyBurrow.Game.States
 
         public void Exit()
         {
-            Debug.Log("Exit from Main Menu State");
             Time.timeScale = 1f;
 
             // TODO: Stop main menu music

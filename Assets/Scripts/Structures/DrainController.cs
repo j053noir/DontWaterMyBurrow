@@ -16,6 +16,10 @@ namespace DontWaterMyBurrow.Structures
         [SerializeField] private int _drainAmount;
         [SerializeField] private int _drainRadius;
 
+        [Header("Debug")]
+        [SerializeField] private bool _debugMode = false;
+        public bool DebugMode => _debugMode;
+
         public Vector2Int Position => _position;
         public int DrainAmount => _drainAmount;
         public int DrainRadius => _drainRadius;
@@ -49,7 +53,7 @@ namespace DontWaterMyBurrow.Structures
 
         private void OnTriggerEnter2D(Collider2D collision)
         {
-            Debug.Log($"Collisioned with {collision.gameObject.tag}");
+            if (_debugMode) Debug.Log($"Collisioned with {collision.gameObject.tag}");
 
             if (collision.gameObject.TryGetComponent<HazardsController>(out var hazard))
             {

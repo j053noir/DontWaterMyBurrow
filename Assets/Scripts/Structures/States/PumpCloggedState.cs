@@ -16,7 +16,7 @@ namespace DontWaterMyBurrow.Structures.State
 
         public void Enter()
         {
-            Debug.Log("Enter from Pump Clogged State");
+            if (_waterPump.DebugMode) Debug.Log("Enter from Pump Clogged State");
             EventBus.Publish(new PumpCloggedStateChangedEvent(_waterPump.gameObject, true));
 
             // TODO: Stop water pump particles
@@ -24,7 +24,7 @@ namespace DontWaterMyBurrow.Structures.State
 
         public void Exit()
         {
-            Debug.Log("Exit from Pump Clogged State");
+            if (_waterPump.DebugMode) Debug.Log("Exit from Pump Clogged State");
 
             // TODO: Start water pump particles
         }
