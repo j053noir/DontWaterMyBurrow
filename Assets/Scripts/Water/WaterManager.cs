@@ -24,6 +24,7 @@ namespace DontWaterMyBurrow.Water
         [Header("Water Properties")]
         [SerializeField] private float _globalWaterPressure = 0.33f;
 
+        private bool _isSimulatingWater = false;
         private HashSet<Vector2Int> _occupiedCells;
 
         private void Awake()
@@ -110,6 +111,8 @@ namespace DontWaterMyBurrow.Water
 
         private void OnGameStateChanged(GameStateChangedEvent @event)
         {
+            _isSimulatingWater = @event.NewState == GameState.WaveActive;
+
             if (@event.NewState == GameState.Restart)
             {
                 ResetWater();
@@ -190,13 +193,16 @@ namespace DontWaterMyBurrow.Water
         /// </summary>
         private void GenerateNewWater()
         {
+            if (!_isSimulatingWater) return;
+
             for (int i = _mapGridConfig.MinXBoundary; i < _mapGridConfig.MaxXBoundary; i++)
             {
                 var position = new Vector2Int(i, _mapGridConfig.YBottomBoundary);
                 if (!IsCellOccupied(position))
                 {
+                    _waterGrid.TryGetValue(position, out float currentLevel);
                     // Increase water level, but don't exceed 100%
-                    _waterGrid[position] = Mathf.Clamp(_waterGrid[position] + _globalWaterPressure, 0f, 1f);
+                    _waterGrid[position] = Mathf.Clamp(currentLevel + _globalWaterPressure, 0f, 1f);
                 }
             }
         }
