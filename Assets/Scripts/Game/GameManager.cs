@@ -5,6 +5,7 @@ using DontWaterMyBurrow.Water.Events;
 using DontWaterMyBurrow.Game.Events;
 using System;
 using System.Collections.Generic;
+using DontWaterMyBurrow.Game.States;
 
 namespace DontWaterMyBurrow.Game
 {
@@ -14,7 +15,7 @@ namespace DontWaterMyBurrow.Game
         WavePreparation,
         WaveActive,
         GamePlay,
-        Resume,
+        //Resume,
         WaveCompleted,
         GameOver,
         Pause,
@@ -24,25 +25,46 @@ namespace DontWaterMyBurrow.Game
 
     public class GameManager : MonoBehaviour
     {
-        [SerializeField] private GameState _currentGameState = GameState.MainMenu;
         [SerializeField] private int _currentWave = 0;
-        public GameState CurrentGameState => _currentGameState;
         public int CurrentWave => _currentWave;
 
         private HashSet<Type> _knownManagers;
         private HashSet<Type> _readyManagers;
 
+        public StateMachine StateMachine;
+        public GameOverState GameOverState { get; private set; }
+        public MainMenuState MainMenuState { get; private set; }
+        public PauseState PauseState { get; private set; }
+        public RestartState RestartState { get; private set; }
+        public VictoryState VictoryState { get; private set; }
+        public WaveActiveState WaveActiveState { get; private set; }
+        public WavePreparationState WavePreparationState { get; private set; }
+
         private void Awake()
         {
             _knownManagers = new();
             _readyManagers = new();
+
+            StateMachine = new();
+
+            GameOverState = new GameOverState();
+            MainMenuState = new MainMenuState();
+            PauseState = new PauseState();
+            RestartState = new RestartState(this);
+            VictoryState = new VictoryState();
+            WaveActiveState = new WaveActiveState();
+            WavePreparationState = new WavePreparationState(this);
+        }
+
+        private void Start()
+        {
+            StateMachine.ChangeState(MainMenuState);
         }
 
         private void OnEnable()
         {
             EventBus.Subscribe<WaveCompletedEvent>(OnWaveCompleted);
             EventBus.Subscribe<BurrowFloodUpdatedEvent>(OnBurrowWaterLevelChanged);
-            EventBus.Subscribe<GameStateChangedEvent>(OnGameStateChanged);
             EventBus.Subscribe<RegisterManagerEvent>(OnRegisterManager);
             EventBus.Subscribe<UnregisterManagerEvent>(OnUnregisterManager);
             EventBus.Subscribe<ManagerReadyEvent>(OnManagerReady);
@@ -52,25 +74,29 @@ namespace DontWaterMyBurrow.Game
         {
             EventBus.Unsubscribe<WaveCompletedEvent>(OnWaveCompleted);
             EventBus.Unsubscribe<BurrowFloodUpdatedEvent>(OnBurrowWaterLevelChanged);
-            EventBus.Unsubscribe<GameStateChangedEvent>(OnGameStateChanged);
             EventBus.Unsubscribe<RegisterManagerEvent>(OnRegisterManager);
             EventBus.Unsubscribe<UnregisterManagerEvent>(OnUnregisterManager);
             EventBus.Unsubscribe<ManagerReadyEvent>(OnManagerReady);
         }
 
-        private void OnGameStateChanged(GameStateChangedEvent @event)
+        private void OnWaveCompleted(WaveCompletedEvent @event)
         {
-            Time.timeScale = @event.NewState == GameState.Pause || @event.NewState == GameState.Restart || @event.NewState == GameState.GameOver || @event.NewState == GameState.Victory ? 0 : 1;
-
-            _currentGameState = @event.NewState;
-
-            if (@event.NewState == GameState.Restart) ResetGame();
+            if (@event.WaveNumber <= @event.MaxWaveNumber)
+            {
+                StateMachine.ChangeState(WavePreparationState);
+            }
+            else
+            {
+                StateMachine.ChangeState(VictoryState);
+            }
         }
 
-        private void ResetGame()
+        private void OnBurrowWaterLevelChanged(BurrowFloodUpdatedEvent @event)
         {
-            _currentWave = 0;
-            _readyManagers.Clear();
+            if (@event.MaxFloodCapacity == @event.FloodMeter)
+            {
+                StateMachine.ChangeState(GameOverState);
+            }
         }
 
         private void OnRegisterManager(RegisterManagerEvent @event)
@@ -87,7 +113,7 @@ namespace DontWaterMyBurrow.Game
         {
             _readyManagers.Add(@event.ManagerType);
 
-            if (_readyManagers.Count == _knownManagers.Count && _currentGameState == GameState.Restart)
+            if (_readyManagers.Count == _knownManagers.Count && StateMachine.CurrentState is RestartState)
             {
                 StartNextWave();
             }
@@ -97,37 +123,23 @@ namespace DontWaterMyBurrow.Game
         {
             _currentWave++;
             EventBus.Publish(new WaveStartedEvent(_currentWave));
-            EventBus.Publish(new GameStateChangedEvent(GameState.WavePreparation));
+            StateMachine.ChangeState(WavePreparationState);
         }
 
         public void PauseGame()
         {
-            EventBus.Publish(new GameStateChangedEvent(GameState.Pause));
+            StateMachine.ChangeState(PauseState);
         }
 
         public void GameRestart()
         {
-            EventBus.Publish(new GameStateChangedEvent(GameState.Restart));
+            StateMachine.ChangeState(RestartState);
         }
 
-        public void OnWaveCompleted(WaveCompletedEvent @event)
+        public void ResetGame()
         {
-            if (@event.WaveNumber <= @event.MaxWaveNumber)
-            {
-                EventBus.Publish(new GameStateChangedEvent(GameState.WavePreparation));
-            }
-            else
-            {
-                EventBus.Publish(new GameStateChangedEvent(GameState.Victory));
-            }
-        }
-
-        public void OnBurrowWaterLevelChanged(BurrowFloodUpdatedEvent @event)
-        {
-            if (@event.MaxFloodCapacity == @event.FloodMeter)
-            {
-                EventBus.Publish(new GameStateChangedEvent(GameState.GameOver));
-            }
+            _currentWave = 0;
+            _readyManagers.Clear();
         }
     }
 }
