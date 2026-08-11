@@ -5,6 +5,7 @@ using DontWaterMyBurrow.Game.Events;
 using DontWaterMyBurrow.Wave.Events;
 using UnityEngine;
 using System.Collections.Generic;
+using DontWaterMyBurrow.Wave.States;
 
 namespace DontWaterMyBurrow.Wave
 {
@@ -14,17 +15,29 @@ namespace DontWaterMyBurrow.Wave
         [SerializeField] private WaveDataSO _firstWaveData;
         [SerializeField] private WaveDataSO _currentWaveData;
         [SerializeField] private float _timeUntilNextWave = 10f;
-        [SerializeField] private bool _isWaveActive = false;
+
 
         [Header("Config")]
         [SerializeField] private MapGridConfigSO _mapGridConfig;
 
+        [Header("Debug")]
+        [SerializeField] public bool debugMode = false;
+
         private float _waveTimer = 0f;
         private Dictionary<HazardsSpawnData, float> _hazardTimers;
+
+        private StateMachine _stateMachine;
+        public ActiveWaveState ActiveWaveState { get; private set; }
+        public NextWaveState NextWaveState { get; private set; }
 
         private void Awake()
         {
             _hazardTimers = new();
+
+            _stateMachine = new StateMachine();
+
+            ActiveWaveState = new ActiveWaveState();
+            NextWaveState = new NextWaveState(this);
         }
 
         private void OnEnable()
@@ -43,7 +56,11 @@ namespace DontWaterMyBurrow.Wave
         {
             if (@event.NewState == GameState.WavePreparation)
             {
-                StartWave();
+                _stateMachine.ChangeState(NextWaveState);
+            }
+            else if (@event.NewState == GameState.WaveActive)
+            {
+                _stateMachine.ChangeState(ActiveWaveState);
             }
             else if (@event.NewState == GameState.Restart)
             {
@@ -53,25 +70,38 @@ namespace DontWaterMyBurrow.Wave
 
         private void Update()
         {
-            if (!_isWaveActive) return;
+            if (_currentWaveData == null) return;
 
-            _waveTimer -= Time.deltaTime;
-            EventBus.Publish(new WaveTimerChangedEvent(_currentWaveData.WaveNumber, _timeUntilNextWave, _waveTimer));
-
-            if (_waveTimer <= 0)
+            if (_stateMachine.CurrentState == NextWaveState)
             {
-                EndWave();
-                return;
+                _timeUntilNextWave = Mathf.Max(0, _timeUntilNextWave - Time.deltaTime);
+
+                if (_timeUntilNextWave <= 0)
+                {
+                    EventBus.Publish(new GameStateChangedEvent(GameState.WaveActive));
+                }
+            }
+            else if (_stateMachine.CurrentState == ActiveWaveState)
+            {
+                _waveTimer = Mathf.Max(0, _waveTimer - Time.deltaTime);
+
+                if (_waveTimer <= 0)
+                {
+                    EndWave();
+                }
+                else
+                {
+                    SpawnHazards();
+                }
             }
 
-            SpawnHazards();
+            EventBus.Publish(new WaveTimerChangedEvent(_currentWaveData.WaveNumber, _timeUntilNextWave, _waveTimer));
         }
 
         private void ResetWave()
         {
             _currentWaveData = _firstWaveData;
             _timeUntilNextWave = 10f;
-            _isWaveActive = false;
             _waveTimer = 0f;
             _hazardTimers.Clear();
             EventBus.Publish(new ManagerReadyEvent(this.GetType()));
@@ -93,7 +123,6 @@ namespace DontWaterMyBurrow.Wave
 
         public void StartWave()
         {
-            _isWaveActive = true;
             _timeUntilNextWave = 10f;
             _waveTimer = _currentWaveData.WaveDuration;
             _hazardTimers.Clear();
@@ -108,7 +137,6 @@ namespace DontWaterMyBurrow.Wave
 
         public void EndWave()
         {
-            _isWaveActive = false;
             EventBus.Publish(new WaveCompletedEvent());
         }
 
