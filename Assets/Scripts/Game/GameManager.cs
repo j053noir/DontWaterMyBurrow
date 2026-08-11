@@ -1,11 +1,12 @@
-using UnityEngine;
-using DontWaterMyBurrow.Core;
-using DontWaterMyBurrow.Wave.Events;
-using DontWaterMyBurrow.Water.Events;
-using DontWaterMyBurrow.Game.Events;
 using System;
 using System.Collections.Generic;
+using DontWaterMyBurrow.Core;
+using DontWaterMyBurrow.Core.Interfaces;
+using DontWaterMyBurrow.Game.Events;
 using DontWaterMyBurrow.Game.States;
+using DontWaterMyBurrow.Water.Events;
+using DontWaterMyBurrow.Wave.Events;
+using UnityEngine;
 
 namespace DontWaterMyBurrow.Game
 {
@@ -14,8 +15,6 @@ namespace DontWaterMyBurrow.Game
         MainMenu,
         WavePreparation,
         WaveActive,
-        GamePlay,
-        //Resume,
         WaveCompleted,
         GameOver,
         Pause,
@@ -32,39 +31,38 @@ namespace DontWaterMyBurrow.Game
         private HashSet<Type> _readyManagers;
 
         public StateMachine StateMachine;
-        public GameOverState GameOverState { get; private set; }
-        public MainMenuState MainMenuState { get; private set; }
-        public PauseState PauseState { get; private set; }
-        public RestartState RestartState { get; private set; }
-        public VictoryState VictoryState { get; private set; }
-        public WaveActiveState WaveActiveState { get; private set; }
-        public WavePreparationState WavePreparationState { get; private set; }
+        Dictionary<GameState, IState> _gameStateMap;
 
         private void Awake()
         {
             _knownManagers = new();
             _readyManagers = new();
 
+
             StateMachine = new();
 
-            GameOverState = new GameOverState();
-            MainMenuState = new MainMenuState();
-            PauseState = new PauseState();
-            RestartState = new RestartState(this);
-            VictoryState = new VictoryState();
-            WaveActiveState = new WaveActiveState();
-            WavePreparationState = new WavePreparationState(this);
+            _gameStateMap = new()
+            {
+                { GameState.MainMenu, new MainMenuState()},
+                { GameState.WavePreparation, new WavePreparationState(this)},
+                { GameState.WaveActive, new WaveActiveState()},
+                { GameState.GameOver, new GameOverState()},
+                { GameState.Pause, new PauseState()},
+                { GameState.Restart, new RestartState(this)},
+                { GameState.Victory, new VictoryState()},
+            };
         }
 
         private void Start()
         {
-            StateMachine.ChangeState(MainMenuState);
+            StateMachine.ChangeState(_gameStateMap[GameState.MainMenu]);
         }
 
         private void OnEnable()
         {
             EventBus.Subscribe<WaveCompletedEvent>(OnWaveCompleted);
             EventBus.Subscribe<BurrowFloodUpdatedEvent>(OnBurrowWaterLevelChanged);
+            EventBus.Subscribe<GameStateChangedEvent>(OnGameStateChanged);
             EventBus.Subscribe<RegisterManagerEvent>(OnRegisterManager);
             EventBus.Subscribe<UnregisterManagerEvent>(OnUnregisterManager);
             EventBus.Subscribe<ManagerReadyEvent>(OnManagerReady);
@@ -74,6 +72,7 @@ namespace DontWaterMyBurrow.Game
         {
             EventBus.Unsubscribe<WaveCompletedEvent>(OnWaveCompleted);
             EventBus.Unsubscribe<BurrowFloodUpdatedEvent>(OnBurrowWaterLevelChanged);
+            EventBus.Unsubscribe<GameStateChangedEvent>(OnGameStateChanged);
             EventBus.Unsubscribe<RegisterManagerEvent>(OnRegisterManager);
             EventBus.Unsubscribe<UnregisterManagerEvent>(OnUnregisterManager);
             EventBus.Unsubscribe<ManagerReadyEvent>(OnManagerReady);
@@ -83,11 +82,11 @@ namespace DontWaterMyBurrow.Game
         {
             if (@event.WaveNumber <= @event.MaxWaveNumber)
             {
-                StateMachine.ChangeState(WavePreparationState);
+                StateMachine.ChangeState(_gameStateMap[GameState.WavePreparation]);
             }
             else
             {
-                StateMachine.ChangeState(VictoryState);
+                StateMachine.ChangeState(_gameStateMap[GameState.Victory]);
             }
         }
 
@@ -95,7 +94,16 @@ namespace DontWaterMyBurrow.Game
         {
             if (@event.MaxFloodCapacity == @event.FloodMeter)
             {
-                StateMachine.ChangeState(GameOverState);
+                StateMachine.ChangeState(_gameStateMap[GameState.GameOver]);
+            }
+        }
+
+        private void OnGameStateChanged(GameStateChangedEvent @event)
+        {
+            if (_gameStateMap.TryGetValue(@event.NewState, out var targetState) &&
+                StateMachine.CurrentState != targetState)
+            {
+                StateMachine.ChangeState(targetState);
             }
         }
 
@@ -123,17 +131,17 @@ namespace DontWaterMyBurrow.Game
         {
             _currentWave++;
             EventBus.Publish(new WaveStartedEvent(_currentWave));
-            StateMachine.ChangeState(WavePreparationState);
+            StateMachine.ChangeState(_gameStateMap[GameState.WavePreparation]);
         }
 
         public void PauseGame()
         {
-            StateMachine.ChangeState(PauseState);
+            StateMachine.ChangeState(_gameStateMap[GameState.Pause]);
         }
 
         public void GameRestart()
         {
-            StateMachine.ChangeState(RestartState);
+            StateMachine.ChangeState(_gameStateMap[GameState.Restart]);
         }
 
         public void ResetGame()
