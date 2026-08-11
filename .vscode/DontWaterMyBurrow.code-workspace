@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		}
+	],
+	"settings": {
+		"[xml]": {
+			"editor.formatOnSave": false
+		}
+	}
+}
