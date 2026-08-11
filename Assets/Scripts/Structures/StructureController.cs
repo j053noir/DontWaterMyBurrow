@@ -8,46 +8,52 @@ namespace DontWaterMyBurrow.Structures
 {
     public class StructureController : MonoBehaviour
     {
-    [SerializeField] private StructureType _type;
-    [SerializeField] private StructureDataSO _dataSO;
-    [SerializeField] private Vector2Int _position;
+        [SerializeField] private StructureType _type;
+        [SerializeField] private StructureDataSO _dataSO;
+        [SerializeField] private Vector2Int _position;
 
-    [SerializeField] private int _health;
-    [SerializeField] private int _maxHealth;
-    [SerializeField] private bool _hasBeenDamaged = false;
+        [SerializeField] private int _health;
+        [SerializeField] private int _maxHealth;
+        [SerializeField] private bool _hasBeenDamaged = false;
 
-    public StructureType Type => _type;
-    public StructureDataSO DataSO => _dataSO;
-    public Vector2Int Position => _position;
-    public bool IsDamaged => _hasBeenDamaged;
-    public int Health => _health;
+        public StructureType Type => _type;
+        public StructureDataSO DataSO => _dataSO;
+        public Vector2Int Position => _position;
+        public bool IsDamaged => _hasBeenDamaged;
+        public int Health => _health;
 
-    public void Repair(int amount)
-    {
-        _health = Mathf.Min(_maxHealth, _health + amount);
-
-        if (_health >= _maxHealth) _hasBeenDamaged = false;
-
-        EventBus.Publish(new StructureRepairedEvent(_type, this.gameObject));
-    }
-
-    public void TakeDamage(int damageTaken)
-    {
-        _health -= damageTaken;
-        _hasBeenDamaged = true;
-
-        if (_health <= 0)
+        private void OnEnable()
         {
-            _health = 0;
-            DestroyStructure();
+            _maxHealth = _dataSO.MaxHealth;
+            _health = _maxHealth;
+        }
+
+        public void Repair(int amount)
+        {
+            _health = Mathf.Min(_maxHealth, _health + amount);
+
+            if (_health >= _maxHealth) _hasBeenDamaged = false;
+
+            EventBus.Publish(new StructureRepairedEvent(_type, this.gameObject));
+        }
+
+        public void TakeDamage(int damageTaken)
+        {
+            _health -= damageTaken;
+            _hasBeenDamaged = true;
+
+            if (_health <= 0)
+            {
+                _health = 0;
+                DestroyStructure();
+            }
+        }
+
+        private void DestroyStructure()
+        {
+            // TODO: Implement object pooling to about instancing new ones
+            EventBus.Publish(new StructureDestroyedEvent(Position, gameObject));
+            Destroy(this.gameObject);
         }
     }
-
-    private void DestroyStructure()
-    {
-        // TODO: Implement object pooling to about instancing new ones
-        EventBus.Publish(new StructureDestroyedEvent(Position, gameObject));
-        Destroy(this.gameObject);
-    }
-}
 }
