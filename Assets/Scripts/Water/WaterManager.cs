@@ -21,11 +21,17 @@ namespace DontWaterMyBurrow.Water
         [SerializeField] private HashSet<Vector2Int> _drainCells;
         [SerializeField] private List<Vector2Int> _waterFlowVectors;
 
+
         [Header("Water Properties")]
         [SerializeField] private float _globalWaterPressure = 0.33f;
+        [SerializeField] private float _waterGeneratedPerSecond = 0.01f;
+
+        [Header("Debug")]
+        [SerializeField] private bool _debugMode;
 
         private bool _isSimulatingWater = false;
         private HashSet<Vector2Int> _occupiedCells;
+        private float _generationTimer = 0.0f;
 
         private void Awake()
         {
@@ -173,6 +179,8 @@ namespace DontWaterMyBurrow.Water
                     EventBus.Publish(new WaterReachedBurrowEvent(inflow));
                 }
             }
+
+            EventBus.Publish(new WaterGridUpdateEvent(_waterGrid));
         }
 
         public bool MoveWater(Vector2Int fromPosition, Vector2Int toPosition)
@@ -206,6 +214,11 @@ namespace DontWaterMyBurrow.Water
         {
             if (!_isSimulatingWater) return;
 
+            _generationTimer += Time.deltaTime;
+            if (_generationTimer < _waterGeneratedPerSecond) return;
+
+            _generationTimer = 0f;
+
             for (int i = _mapGridConfig.MinXBoundary; i < _mapGridConfig.MaxXBoundary; i++)
             {
                 var position = new Vector2Int(i, _mapGridConfig.YBottomBoundary);
@@ -214,6 +227,8 @@ namespace DontWaterMyBurrow.Water
                     _waterGrid.TryGetValue(position, out float currentLevel);
                     // Increase water level, but don't exceed 100%
                     _waterGrid[position] = Mathf.Clamp(currentLevel + _globalWaterPressure, 0f, 1f);
+
+                    if (_debugMode) Debug.Log($"WaterManager: Generated new water at position {position} with level {currentLevel + _globalWaterPressure}");
                 }
             }
         }
