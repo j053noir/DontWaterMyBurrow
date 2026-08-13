@@ -1,12 +1,19 @@
-using UnityEngine;
-using DontWaterMyBurrow.Core;
-using DontWaterMyBurrow.Water.Events;
-using DontWaterMyBurrow.Data;
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
+using DontWaterMyBurrow.Core;
+using DontWaterMyBurrow.Data;
+using DontWaterMyBurrow.Water.Events;
+using UnityEngine;
 
 namespace DontWaterMyBurrow.Water
 {
+    [Serializable]
+    public class WaterCell
+    {
+        public Vector2Int Position;
+        public float WaterLevel;
+    }
+
     public class WaterVisualRenderer : MonoBehaviour
     {
         [Header("Config")]
@@ -22,6 +29,7 @@ namespace DontWaterMyBurrow.Water
         [SerializeField] private bool _debugMode;
 
         private Dictionary<Vector2Int, SpriteRenderer> _waterSpritePool;
+        [SerializeField] private List<WaterCell> _DebugCellLevel;
 
         private void Awake()
         {
@@ -67,16 +75,17 @@ namespace DontWaterMyBurrow.Water
                     float sprideHeight = _waterSprite.bounds.size.y;
                     spriteRenderer = waterObject.AddComponent<SpriteRenderer>();
                     spriteRenderer.sprite = _waterSprite;
-                    spriteRenderer.color = _waterColor;
                     spriteRenderer.sortingOrder = _sortingOrder;
                     spriteRenderer.sortingLayerName = _sortingLayerName;
                     spriteRenderer.transform.localScale = new Vector3(_mapGridConfig.TileSize / sprideWidth, _mapGridConfig.TileSize / sprideHeight, 1);
                 }
 
+                if (_debugMode) _DebugCellLevel.Add(new WaterCell { Position = key, WaterLevel = waterLevel });
                 _waterSpritePool.Add(key, spriteRenderer);
             }
 
-            spriteRenderer.color = new Color(0.5f, 0.7f, 0.8f, 0.7f + waterLevel * 0.3f);
+            var calculatedAlpha = Mathf.Lerp(0.1f, _waterColor.a, waterLevel);
+            spriteRenderer.color = new Color(_waterColor.r, _waterColor.g, _waterColor.b, calculatedAlpha);
             spriteRenderer.gameObject.SetActive(true);
 
             if (_debugMode) Debug.Log($"WaterVisualRenderer: Set water at position {key} with level {waterLevel}");

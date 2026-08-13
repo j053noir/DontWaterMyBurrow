@@ -167,6 +167,7 @@ namespace DontWaterMyBurrow.UI
                 }
                 else
                 {
+                    resourceCounterLabel.text = "0";
                     _resourceUILabels.Add(new ResourceUILabels { ResourceType = typeName, ResourceLabel = resourceCounterLabel });
                 }
 
