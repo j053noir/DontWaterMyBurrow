@@ -170,7 +170,7 @@ MonoBehaviour:
   _currentWaterLevel: 0
   _maxWaterLevel: 0
   _hudDocument: {fileID: 6584007}
-  _debugMode: 1
+  _debugMode: 0
 --- !u!114 &6584007
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1020,7 +1020,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &830629542
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1036,6 +1036,8 @@ MonoBehaviour:
   _mapGridConfig: {fileID: 11400000, guid: a627ba1f0afad054f998a3e9a4a03019, type: 2}
   _waterFlowVectors: []
   _globalWaterPressure: 0.33
+  _waterGeneratedPerSecond: 5
+  _debugMode: 1
 --- !u!4 &830629543
 Transform:
   m_ObjectHideFlags: 0
@@ -1082,6 +1084,7 @@ Transform:
   m_Children:
   - {fileID: 122727877}
   - {fileID: 1317558356}
+  - {fileID: 1162154107}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1058113149
@@ -1153,6 +1156,56 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DontWaterMyBurrow.UI.PauseMenuController
   _menuDocument: {fileID: 1058113151}
+--- !u!1 &1162154106
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1162154107}
+  - component: {fileID: 1162154108}
+  m_Layer: 0
+  m_Name: WaterVisualRenderer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1162154107
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1162154106}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 910575794}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1162154108
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1162154106}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4efdac50dbd942d45ad756c2ccd729e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DontWaterMyBurrow.Water.WaterVisualRenderer
+  _mapGridConfig: {fileID: 11400000, guid: a627ba1f0afad054f998a3e9a4a03019, type: 2}
+  _waterSprite: {fileID: 21300000, guid: 09aa64360860a4144b48c9d241c80ff1, type: 3}
+  _waterColor: {r: 0.5, g: 0.7, b: 0.8, a: 0.7}
+  _sortingLayerName: Default
+  _sortingOrder: -1
+  _debugMode: 0
 --- !u!1 &1214991198
 GameObject:
   m_ObjectHideFlags: 0
