@@ -154,7 +154,7 @@ namespace DontWaterMyBurrow.Wave
                 return;
             }
 
-            var spawnPosition = new Vector3(Random.Range(_mapGridConfig.MinXBoundary, _mapGridConfig.MaxXBoundary), _mapGridConfig.YBottomBoundary, 0);
+            var spawnPosition = new Vector3(Random.Range(_mapGridConfig.MinXBoundary, _mapGridConfig.MaxXBoundary), _mapGridConfig.MinYBoundary, 0);
             Instantiate(hazard.Prefab, spawnPosition, Quaternion.identity);
             var cellPosition = new Vector2Int(Mathf.RoundToInt(spawnPosition.x), Mathf.RoundToInt(spawnPosition.y));
             EventBus.Publish(new HazardSpawnedEvent(hazard.Type, cellPosition));

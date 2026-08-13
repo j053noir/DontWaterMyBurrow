@@ -36,8 +36,8 @@ namespace DontWaterMyBurrow.Building
 
         public int MinXBoundary => _mapGridConfig.MinXBoundary;
         public int MaxXBoundary => _mapGridConfig.MaxXBoundary;
-        public int YBottomBoundary => _mapGridConfig.YBottomBoundary;
-        public int YTopBoundary => _mapGridConfig.YTopBoundary;
+        public int YBottomBoundary => _mapGridConfig.MinYBoundary;
+        public int YTopBoundary => _mapGridConfig.MaxYBoundary;
 
         private void Awake()
         {

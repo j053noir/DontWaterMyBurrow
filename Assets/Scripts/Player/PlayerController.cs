@@ -89,7 +89,7 @@ namespace DontWaterMyBurrow.Player
             if (_mapGridConfig != null)
             {
                 nextPosition.x = Mathf.Clamp(nextPosition.x, _mapGridConfig.MinXBoundary, _mapGridConfig.MaxXBoundary);
-                nextPosition.y = Mathf.Clamp(nextPosition.y, _mapGridConfig.YBottomBoundary, _mapGridConfig.YTopBoundary);
+                nextPosition.y = Mathf.Clamp(nextPosition.y, _mapGridConfig.MinYBoundary, _mapGridConfig.MaxYBoundary);
             }
 
             _rigidBody2d.MovePosition(nextPosition);

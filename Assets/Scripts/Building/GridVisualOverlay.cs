@@ -47,7 +47,7 @@ namespace DontWaterMyBurrow.Building
         {
             for (int x = _mapGridConfig.MinXBoundary; x <= _mapGridConfig.MaxXBoundary; x++)
             {
-                for (int y = _mapGridConfig.YBottomBoundary; y <= _mapGridConfig.YTopBoundary; y++)
+                for (int y = _mapGridConfig.MinYBoundary; y <= _mapGridConfig.MaxYBoundary; y++)
                 {
                     var tile = new GameObject($"Tile_{x}_{y}");
                     tile.transform.SetParent(_gridParent);

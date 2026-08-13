@@ -11,8 +11,8 @@ namespace DontWaterMyBurrow.Data
         [field: Header("Boundaries")]
         [field: SerializeField] public int MinXBoundary { get; private set; } = -5;
         [field: SerializeField] public int MaxXBoundary { get; private set; } = 5;
-        [field: SerializeField] public int YBottomBoundary { get; private set; } = -5;
-        [field: SerializeField] public int YTopBoundary { get; private set; } = 5;
+        [field: SerializeField] public int MinYBoundary { get; private set; } = -5;
+        [field: SerializeField] public int MaxYBoundary { get; private set; } = 5;
 
         [field: Header("Burrow")]
         [field: SerializeField] public Vector2Int BurrowPosition { get; private set; } = Vector2Int.zero;

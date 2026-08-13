@@ -15,6 +15,6 @@ MonoBehaviour:
   <TileSize>k__BackingField: 1
   <MinXBoundary>k__BackingField: -8
   <MaxXBoundary>k__BackingField: 8
-  <YBottomBoundary>k__BackingField: -8
-  <YTopBoundary>k__BackingField: 8
+  <MinYBoundary>k__BackingField: -8
+  <MaxYBoundary>k__BackingField: 8
   <BurrowPosition>k__BackingField: {x: 2, y: 2}

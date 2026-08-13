@@ -137,7 +137,7 @@ namespace DontWaterMyBurrow.Resources
 
             var randomPosition = new Vector2Int(
                 Random.Range(_mapGridConfig.MinXBoundary, _mapGridConfig.MaxXBoundary), // X within boundaries
-                Random.Range(_mapGridConfig.YBottomBoundary, _mapGridConfig.YTopBoundary) // Y within boundaries
+                Random.Range(_mapGridConfig.MinYBoundary, _mapGridConfig.MaxYBoundary) // Y within boundaries
             );
 
             int attempts = 0;
@@ -148,7 +148,7 @@ namespace DontWaterMyBurrow.Resources
                 // Keep generating random positions until an empty cell is found
                 randomPosition = new Vector2Int(
                     Random.Range(_mapGridConfig.MinXBoundary, _mapGridConfig.MaxXBoundary), // X within boundaries
-                    Random.Range(_mapGridConfig.YBottomBoundary, _mapGridConfig.YTopBoundary) // Y within boundaries
+                    Random.Range(_mapGridConfig.MinYBoundary, _mapGridConfig.MaxYBoundary) // Y within boundaries
                 );
             }
 
