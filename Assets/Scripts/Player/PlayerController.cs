@@ -106,7 +106,7 @@ namespace DontWaterMyBurrow.Player
             }
             else if (@event.NewState == GameState.WavePreparation || @event.NewState == GameState.WaveActive)
             {
-                Debug.Log($"[PlayerController] Game state changed to {@event.NewState}, Time Scale: {Time.timeScale}");
+                if (_debugMode) Debug.Log($"[PlayerController] Game state changed to {@event.NewState}, Time Scale: {Time.timeScale}");
                 StateMachine.ChangeState(NormalState);
             }
         }
