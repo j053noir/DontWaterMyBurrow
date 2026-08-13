@@ -1035,8 +1035,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DontWaterMyBurrow.Water.WaterManager
   _mapGridConfig: {fileID: 11400000, guid: a627ba1f0afad054f998a3e9a4a03019, type: 2}
   _waterFlowVectors: []
+  _waterLeekingPositions:
+  - {x: -7, y: -8}
+  - {x: -5, y: -8}
+  - {x: -1, y: -8}
   _globalWaterPressure: 0.33
-  _waterGeneratedPerSecond: 5
+  _waterGeneratedPerSecond: 3
   _debugMode: 1
 --- !u!4 &830629543
 Transform:
@@ -1206,6 +1210,7 @@ MonoBehaviour:
   _sortingLayerName: Default
   _sortingOrder: -1
   _debugMode: 0
+  _DebugCellLevel: []
 --- !u!1 &1214991198
 GameObject:
   m_ObjectHideFlags: 0

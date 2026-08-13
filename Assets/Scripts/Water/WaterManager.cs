@@ -23,6 +23,7 @@ namespace DontWaterMyBurrow.Water
 
 
         [Header("Water Properties")]
+        [SerializeField] private List<Vector2Int> _waterLeekingPositions;
         [SerializeField] private float _globalWaterPressure = 0.33f;
         [SerializeField] private float _waterGeneratedPerSecond = 0.01f;
 
@@ -40,16 +41,16 @@ namespace DontWaterMyBurrow.Water
             _drainCells = new();
             _occupiedCells = new();
             _waterFlowVectors = new()
-        {
-            Vector2Int.up,
-            Vector2Int.up + Vector2Int.left,
-            Vector2Int.up + Vector2Int.right,
-            Vector2Int.left,
-            Vector2Int.right,
-            Vector2Int.down,
-            Vector2Int.down + Vector2Int.left,
-            Vector2Int.down + Vector2Int.right,
-        };
+            {
+                Vector2Int.up,
+                Vector2Int.up + Vector2Int.left,
+                Vector2Int.up + Vector2Int.right,
+                Vector2Int.left,
+                Vector2Int.right,
+                Vector2Int.down,
+                Vector2Int.down + Vector2Int.left,
+                Vector2Int.down + Vector2Int.right,
+            };
         }
 
         private void OnEnable()
@@ -156,17 +157,20 @@ namespace DontWaterMyBurrow.Water
                     else if (_channelDirections.TryGetValue(waterKvP.Key, out var channelDirection))
                     {
                         var nextPosition = waterKvP.Key + channelDirection;
-                        MoveWater(waterKvP.Key, nextPosition);
+                        MoveWater(waterKvP.Key, nextPosition, waterKvP.Value * _globalWaterPressure);
                     }
                     else
                     {
-                        // Try to move following water flow vectors
-                        foreach (var flowVector in _waterFlowVectors)
+                        var availableMoves = GetAvailableMoves(waterKvP.Key);
+
+                        if (availableMoves.Count > 0)
                         {
-                            var nextPosition = waterKvP.Key + flowVector;
-                            if (MoveWater(waterKvP.Key, nextPosition))
+                            float pressurePerCell = waterKvP.Value * _globalWaterPressure / availableMoves.Count;
+                            // Try to move following water flow vectors
+                            foreach (var flowVector in availableMoves)
                             {
-                                break;
+                                var nextPosition = waterKvP.Key + flowVector;
+                                MoveWater(waterKvP.Key, nextPosition, pressurePerCell);
                             }
                         }
                     }
@@ -183,15 +187,29 @@ namespace DontWaterMyBurrow.Water
             EventBus.Publish(new WaterGridUpdateEvent(_waterGrid));
         }
 
-        public bool MoveWater(Vector2Int fromPosition, Vector2Int toPosition)
+        private List<Vector2Int> GetAvailableMoves(Vector2Int position)
+        {
+            var availableCells = new List<Vector2Int>();
+            foreach (var flowVector in _waterFlowVectors)
+            {
+                var nextPosition = position + flowVector;
+                if (!IsCellOccupied(nextPosition) && IsWithinBoundaries(nextPosition))
+                {
+                    availableCells.Add(flowVector);
+                }
+            }
+            return availableCells;
+        }
+
+        private bool MoveWater(Vector2Int fromPosition, Vector2Int toPosition, float pressure)
         {
             if (!IsCellOccupied(toPosition))
             {
                 _waterGrid.TryGetValue(toPosition, out float currentToLevel);
-                _waterGrid[toPosition] = Mathf.Clamp(currentToLevel + _globalWaterPressure, 0f, 1f);
+                _waterGrid[toPosition] = Mathf.Clamp(currentToLevel + pressure, 0f, 1f);
 
                 _waterGrid.TryGetValue(fromPosition, out float currentFromLevel);
-                float newFromLevel = currentFromLevel - _globalWaterPressure;
+                float newFromLevel = currentFromLevel - pressure;
                 if (newFromLevel <= 0f)
                 {
                     _waterGrid.Remove(fromPosition);
@@ -219,9 +237,8 @@ namespace DontWaterMyBurrow.Water
 
             _generationTimer = 0f;
 
-            for (int i = _mapGridConfig.MinXBoundary; i < _mapGridConfig.MaxXBoundary; i++)
+            foreach (var position in _waterLeekingPositions)
             {
-                var position = new Vector2Int(i, _mapGridConfig.YBottomBoundary);
                 if (!IsCellOccupied(position))
                 {
                     _waterGrid.TryGetValue(position, out float currentLevel);
@@ -274,6 +291,14 @@ namespace DontWaterMyBurrow.Water
         public bool IsCellFlooded(Vector2Int gridPosition)
         {
             return _waterGrid.TryGetValue(gridPosition, out var level) && level >= 0.05;
+        }
+
+        public bool IsWithinBoundaries(Vector2Int position)
+        {
+            return position.x >= _mapGridConfig.MinXBoundary
+                && position.x <= _mapGridConfig.MaxXBoundary
+                && position.y >= _mapGridConfig.MinYBoundary
+                && position.y <= _mapGridConfig.MaxYBoundary;
         }
 
         public void RegisterChannel(Vector2Int gridPosition, Vector2 direction)
