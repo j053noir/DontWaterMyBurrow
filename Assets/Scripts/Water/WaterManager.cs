@@ -7,6 +7,7 @@ using DontWaterMyBurrow.Game.Events;
 using DontWaterMyBurrow.Game;
 using DontWaterMyBurrow.Building.Events;
 using DontWaterMyBurrow.Data;
+using System;
 
 namespace DontWaterMyBurrow.Water
 {
@@ -37,6 +38,7 @@ namespace DontWaterMyBurrow.Water
         private void Awake()
         {
             _waterGrid = new();
+            _waterLeekingPositions = new();
             _channelDirections = new();
             _drainCells = new();
             _occupiedCells = new();
@@ -61,6 +63,8 @@ namespace DontWaterMyBurrow.Water
             EventBus.Subscribe<RemoveWaterDrainEvent>(OnRemoveWaterDrain);
             EventBus.Subscribe<GameStateChangedEvent>(OnGameStateChanged);
             EventBus.Subscribe<BuildValidationRequestEvent>(OnBuildValidationRequested);
+            EventBus.Subscribe<RegisterWaterLeakEvent>(OnRegisterWaterLeak);
+            EventBus.Subscribe<RemoveWaterLeakEvent>(OnRemoveWaterLeak);
 
             EventBus.Publish(new RegisterManagerEvent(this.GetType()));
         }
@@ -73,6 +77,8 @@ namespace DontWaterMyBurrow.Water
             EventBus.Unsubscribe<RemoveWaterDrainEvent>(OnRemoveWaterDrain);
             EventBus.Unsubscribe<GameStateChangedEvent>(OnGameStateChanged);
             EventBus.Unsubscribe<BuildValidationRequestEvent>(OnBuildValidationRequested);
+            EventBus.Unsubscribe<RegisterWaterLeakEvent>(OnRegisterWaterLeak);
+            EventBus.Unsubscribe<RemoveWaterLeakEvent>(OnRemoveWaterLeak);
 
             EventBus.Publish(new UnregisterManagerEvent(this.GetType()));
         }
@@ -120,7 +126,11 @@ namespace DontWaterMyBurrow.Water
         {
             _isSimulatingWater = @event.NewState == GameState.WaveActive;
 
-            if (@event.NewState == GameState.Restart)
+            if (@event.NewState == GameState.WaveCompleted)
+            {
+                _waterLeekingPositions.Clear();
+            }
+            else if (@event.NewState == GameState.Restart)
             {
                 ResetWater();
             }
@@ -132,6 +142,16 @@ namespace DontWaterMyBurrow.Water
             {
                 @event.Invalidate();
             }
+        }
+
+        private void OnRegisterWaterLeak(RegisterWaterLeakEvent @event)
+        {
+            _waterLeekingPositions.Add(@event.Position);
+        }
+
+        private void OnRemoveWaterLeak(RemoveWaterLeakEvent @event)
+        {
+            _waterLeekingPositions.Remove(@event.Position);
         }
 
         private void UpdateWaterFlow(float deltaTime)
@@ -193,7 +213,7 @@ namespace DontWaterMyBurrow.Water
             foreach (var flowVector in _waterFlowVectors)
             {
                 var nextPosition = position + flowVector;
-                if (!IsCellOccupied(nextPosition) && IsWithinBoundaries(nextPosition))
+                if (!IsCellOccupied(nextPosition) && _mapGridConfig.IsWithinBounds(nextPosition))
                 {
                     availableCells.Add(flowVector);
                 }
@@ -291,14 +311,6 @@ namespace DontWaterMyBurrow.Water
         public bool IsCellFlooded(Vector2Int gridPosition)
         {
             return _waterGrid.TryGetValue(gridPosition, out var level) && level >= 0.05;
-        }
-
-        public bool IsWithinBoundaries(Vector2Int position)
-        {
-            return position.x >= _mapGridConfig.MinXBoundary
-                && position.x <= _mapGridConfig.MaxXBoundary
-                && position.y >= _mapGridConfig.MinYBoundary
-                && position.y <= _mapGridConfig.MaxYBoundary;
         }
 
         public void RegisterChannel(Vector2Int gridPosition, Vector2 direction)
