@@ -26,5 +26,6 @@ namespace DontWaterMyBurrow.Data
         public int WaveNumber;
         public float WaveDuration;
         public List<HazardsSpawnData> HazardsToSpawn;
+        public List<Vector2Int> WaterLeekingPositions;
     }
 }

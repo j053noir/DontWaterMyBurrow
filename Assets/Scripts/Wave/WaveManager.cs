@@ -6,6 +6,7 @@ using DontWaterMyBurrow.Wave.Events;
 using UnityEngine;
 using System.Collections.Generic;
 using DontWaterMyBurrow.Wave.States;
+using DontWaterMyBurrow.Water.Events;
 
 namespace DontWaterMyBurrow.Wave
 {
@@ -14,6 +15,7 @@ namespace DontWaterMyBurrow.Wave
         [Header("Wave")]
         [SerializeField] private WaveDataSO _firstWaveData;
         [SerializeField] private WaveDataSO _currentWaveData;
+        [SerializeField] private List<Vector2Int> _currentLeekingPositions;
         [SerializeField] private float _timeUntilNextWave;
         [SerializeField] private float _defaultTimeUntilNextWave = 30;
 
@@ -34,10 +36,11 @@ namespace DontWaterMyBurrow.Wave
         private void Awake()
         {
             _hazardTimers = new();
+            _currentLeekingPositions = new();
 
             _stateMachine = new StateMachine();
 
-            ActiveWaveState = new ActiveWaveState();
+            ActiveWaveState = new ActiveWaveState(this);
             NextWaveState = new NextWaveState(this);
         }
 
@@ -116,7 +119,7 @@ namespace DontWaterMyBurrow.Wave
                 _hazardTimers[hazard] += Time.deltaTime;
                 if (_hazardTimers[hazard] >= hazard.SpawnInterval)
                 {
-                    SpawnThreat(hazard);
+                    SpawnHazard(hazard);
                     _hazardTimers[hazard] = 0f;
                 }
             }
@@ -126,6 +129,7 @@ namespace DontWaterMyBurrow.Wave
         {
             _timeUntilNextWave = _defaultTimeUntilNextWave;
             _waveTimer = _currentWaveData.WaveDuration;
+            _currentLeekingPositions.Clear();
             _hazardTimers.Clear();
 
             foreach (var hazard in _currentWaveData.HazardsToSpawn)
@@ -138,10 +142,11 @@ namespace DontWaterMyBurrow.Wave
 
         public void EndWave()
         {
+            _currentLeekingPositions.Clear();
             EventBus.Publish(new WaveCompletedEvent());
         }
 
-        public void SpawnThreat(HazardsSpawnData hazard)
+        public void SpawnHazard(HazardsSpawnData hazard)
         {
             if (hazard.Prefab == null)
             {
@@ -155,10 +160,41 @@ namespace DontWaterMyBurrow.Wave
                 return;
             }
 
-            var spawnPosition = new Vector3(Random.Range(_mapGridConfig.MinXBoundary, _mapGridConfig.MaxXBoundary), _mapGridConfig.MinYBoundary, 0);
+            if (_currentLeekingPositions == null || _currentLeekingPositions.Count == 0)
+            {
+                Debug.LogError("[WaveManager] _currentLeekingPositions is empty!");
+                return;
+            }
+
+            var choice = Random.Range(0, _currentLeekingPositions.Count);
+            var spawnPosition = new Vector3(_currentLeekingPositions[choice].x, _currentLeekingPositions[choice].y, 0);
             Instantiate(hazard.Prefab, spawnPosition, Quaternion.identity);
-            var cellPosition = new Vector2Int(Mathf.RoundToInt(spawnPosition.x), Mathf.RoundToInt(spawnPosition.y));
+            var cellPosition = _currentLeekingPositions[choice];
             EventBus.Publish(new HazardSpawnedEvent(hazard.Type, cellPosition));
+        }
+
+        public void RegisterWaterLeaks()
+        {
+            foreach (var leakPosition in _currentWaveData.WaterLeekingPositions)
+            {
+                if (!_mapGridConfig.IsWithinBounds(leakPosition))
+                {
+                    if (debugMode) Debug.LogWarning($"[WaveManager] Cannot register water leak: Position {leakPosition} is outside the grid bounds!");
+                    continue;
+                }
+                _currentLeekingPositions.Add(leakPosition);
+                EventBus.Publish(new RegisterWaterLeakEvent(leakPosition));
+            }
+        }
+
+        public void RemoveWaterLeaks()
+        {
+            foreach (var leakPosition in _currentLeekingPositions)
+            {
+                EventBus.Publish(new RemoveWaterLeakEvent(leakPosition));
+            }
+
+            _currentLeekingPositions.Clear();
         }
     }
 }

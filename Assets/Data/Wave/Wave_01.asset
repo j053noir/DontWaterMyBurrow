@@ -18,3 +18,5 @@ MonoBehaviour:
   - Type: 0
     SpawnInterval: 15
     Prefab: {fileID: 972604368631835179, guid: 5046fa83f635f354cbf966625cf3b4f0, type: 3}
+  WaterLeekingPositions:
+  - {x: -8, y: -8}
