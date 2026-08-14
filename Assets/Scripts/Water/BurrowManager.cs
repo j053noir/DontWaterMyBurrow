@@ -3,17 +3,33 @@ using DontWaterMyBurrow.Core;
 using DontWaterMyBurrow.Water.Events;
 using DontWaterMyBurrow.Game;
 using DontWaterMyBurrow.Game.Events;
+using DontWaterMyBurrow.Data;
 
 namespace DontWaterMyBurrow.Water
 {
     public class BurrowManager : MonoBehaviour
     {
+        [Header("Map Grid Config")]
+        [SerializeField] private MapGridConfigSO _mapGridConfig;
+
+        [Header("Flood Meter")]
         [SerializeField] private float _floodMeter = 0;
         [SerializeField] private float _inflowRate = 0;
         [SerializeField] private float _maxFloodCapacity = 100;
 
         public float FloodMeter => _floodMeter;
         public float MaxFloodCapacity => _maxFloodCapacity;
+
+        private void Start()
+        {
+            if (_mapGridConfig == null) Debug.LogError("MapGridConfig is not assigned to BurrowManager");
+
+            transform.position = new Vector3(
+                _mapGridConfig.BurrowPosition.x * _mapGridConfig.TileSize,
+                _mapGridConfig.BurrowPosition.y * _mapGridConfig.TileSize,
+                0
+            );
+        }
 
         private void OnEnable()
         {
