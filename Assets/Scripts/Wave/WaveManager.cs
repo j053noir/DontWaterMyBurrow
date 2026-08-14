@@ -14,7 +14,8 @@ namespace DontWaterMyBurrow.Wave
         [Header("Wave")]
         [SerializeField] private WaveDataSO _firstWaveData;
         [SerializeField] private WaveDataSO _currentWaveData;
-        [SerializeField] private float _timeUntilNextWave = 10f;
+        [SerializeField] private float _timeUntilNextWave;
+        [SerializeField] private float _defaultTimeUntilNextWave = 30;
 
 
         [Header("Config")]
@@ -101,7 +102,7 @@ namespace DontWaterMyBurrow.Wave
         private void ResetWave()
         {
             _currentWaveData = _firstWaveData;
-            _timeUntilNextWave = 10f;
+            _timeUntilNextWave = _defaultTimeUntilNextWave;
             _waveTimer = 0f;
             _hazardTimers.Clear();
             EventBus.Publish(new ManagerReadyEvent(this.GetType()));
@@ -123,7 +124,7 @@ namespace DontWaterMyBurrow.Wave
 
         public void StartWave()
         {
-            _timeUntilNextWave = 10f;
+            _timeUntilNextWave = _defaultTimeUntilNextWave;
             _waveTimer = _currentWaveData.WaveDuration;
             _hazardTimers.Clear();
 

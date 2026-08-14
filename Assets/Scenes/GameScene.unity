@@ -402,7 +402,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DontWaterMyBurrow.Wave.WaveManager
   _firstWaveData: {fileID: 0}
   _currentWaveData: {fileID: 11400000, guid: 78d03817d4269a2438f2501d13f42802, type: 2}
-  _timeUntilNextWave: 10
+  _timeUntilNextWave: 0
+  _defaultTimeUntilNextWave: 30
   _mapGridConfig: {fileID: 11400000, guid: a627ba1f0afad054f998a3e9a4a03019, type: 2}
   debugMode: 0
 --- !u!1 &331206408
@@ -1305,13 +1306,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DontWaterMyBurrow.Resources.ResourceSpawner
   _spawnConfigs:
   - resourceType: 0
-    maxResources: 1
+    maxResources: 5
     resourcePrefab: {fileID: 2542294227840143017, guid: 725932774479a594a84a0cd0fcc38009, type: 3}
   - resourceType: 2
-    maxResources: 1
+    maxResources: 5
     resourcePrefab: {fileID: 4541081999673910809, guid: 2e9bdcdaf42bff242ba790539cf68a0a, type: 3}
   - resourceType: 1
-    maxResources: 1
+    maxResources: 5
     resourcePrefab: {fileID: 4231461154664559315, guid: da794fbd0c4bc164190f660e5ae2e3cd, type: 3}
   _mapGridConfig: {fileID: 11400000, guid: a627ba1f0afad054f998a3e9a4a03019, type: 2}
 --- !u!1 &1258997697
