@@ -32,5 +32,11 @@ namespace DontWaterMyBurrow.Data
                 Mathf.RoundToInt(worldPosition.y - owner.transform.position.y / TileSize)
             );
         }
+
+        public bool IsWithinBounds(Vector2Int position)
+        {
+            return position.x >= MinXBoundary && position.x <= MaxXBoundary &&
+                   position.y >= MinYBoundary && position.y <= MaxYBoundary;
+        }
     }
 }
