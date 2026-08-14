@@ -68,7 +68,7 @@ namespace DontWaterMyBurrow.UI
 
         private void OnStartButtonPressed()
         {
-            EventBus.Publish(new GameStateChangedEvent(GameState.WavePreparation));
+            EventBus.Publish(new GameStartEvent());
         }
 
         private void OnQuitButtonPressed()

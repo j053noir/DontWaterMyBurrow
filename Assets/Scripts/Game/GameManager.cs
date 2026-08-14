@@ -64,6 +64,7 @@ namespace DontWaterMyBurrow.Game
 
         private void OnEnable()
         {
+            EventBus.Subscribe<GameStartEvent>(OnGameStart);
             EventBus.Subscribe<WaveCompletedEvent>(OnWaveCompleted);
             EventBus.Subscribe<BurrowFloodUpdatedEvent>(OnBurrowWaterLevelChanged);
             EventBus.Subscribe<GameStateChangedEvent>(OnGameStateChanged);
@@ -74,12 +75,18 @@ namespace DontWaterMyBurrow.Game
 
         private void OnDisable()
         {
+            EventBus.Unsubscribe<GameStartEvent>(OnGameStart);
             EventBus.Unsubscribe<WaveCompletedEvent>(OnWaveCompleted);
             EventBus.Unsubscribe<BurrowFloodUpdatedEvent>(OnBurrowWaterLevelChanged);
             EventBus.Unsubscribe<GameStateChangedEvent>(OnGameStateChanged);
             EventBus.Unsubscribe<RegisterManagerEvent>(OnRegisterManager);
             EventBus.Unsubscribe<UnregisterManagerEvent>(OnUnregisterManager);
             EventBus.Unsubscribe<ManagerReadyEvent>(OnManagerReady);
+        }
+
+        private void OnGameStart(GameStartEvent @event)
+        {
+            StateMachine.ChangeState(_gameStateMap[GameState.WavePreparation]);
         }
 
         private void OnWaveCompleted(WaveCompletedEvent @event)
