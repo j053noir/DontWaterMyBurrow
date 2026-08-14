@@ -279,7 +279,7 @@ namespace DontWaterMyBurrow.UI
         private void UpdateWaveTimer(int waveNumber, float timeUntilNextWave, float waveTimer)
         {
             if (_waveNumberLabel is not null) _waveNumberLabel.text = waveNumber.ToString();
-            if (_nextWaveTimerLabel is not null) _nextWaveTimerLabel.text = FormatTime(timeUntilNextWave);
+            if (_nextWaveTimerLabel is not null) _nextWaveTimerLabel.text = timeUntilNextWave.ToString("F0");
             if (_waveTimerLabel is not null) _waveTimerLabel.text = FormatTime(waveTimer);
         }
 
