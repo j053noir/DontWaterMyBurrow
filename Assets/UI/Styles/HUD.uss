@@ -42,11 +42,11 @@ VisualElement {
 .burrow-flood-container {
     align-content: flex-end;
     flex-direction: column;
-    align-self: center;
+    align-self: flex-start;
     justify-content: center;
     align-items: center;
-    width: auto;
-    height: 100%;
+    height: 40%;
+    width: 20%;
 }
 
 .burrow-foreground {
@@ -55,19 +55,17 @@ VisualElement {
     -unity-slice-right: 0;
     -unity-slice-top: 0;
     -unity-slice-bottom: 0;
-    height: 960px;
-    width: 480px;
     background-size: contain;
+    height: 100%;
+    width: 100%;
 }
 
 .flood-bar {
-    rotate: -90deg;
-    align-items: center;
-    justify-content: flex-end;
     position: absolute;
-    scale: 1 7;
-    right: -200px;
-    bottom: 360px;
+    rotate: -90deg;
+    scale: 0.4 3;
+    right: -46%;
+    bottom: 33%;
 }
 
 .flood-bar > .unity-progress-bar__container {
@@ -97,8 +95,8 @@ VisualElement {
 
 .burrow-background {
     background-image: url("project://database/Assets/Sprites/HUD/Burrow_Background.png?fileID=2800000&guid=fcf1942524064a74ea1b0d4534ca78c9&type=3#Burrow_Background");
-    width: 480px;
-    height: 720px;
     position: absolute;
-    -unity-background-scale-mode: scale-and-crop;
+    -unity-background-scale-mode: scale-to-fit;
+    width: 100%;
+    height: 100%;
 }

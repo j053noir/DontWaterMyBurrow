@@ -23,7 +23,7 @@
                 <ui:Label name="wave-number" text="1" class="wave-number"/>
             </ui:VisualElement>
             <ui:VisualElement name="time-until-next-wave-wrapper" class="time-until-next-wave-wrapper" style="justify-content: center;">
-                <ui:Label name="time-until-next-wave" text="10:00" class="time-until-next-wave"/>
+                <ui:Label name="time-until-next-wave" text="00" parse-escape-sequences="true" class="time-until-next-wave"/>
                 <ui:Label name="time-until-next-wave-text" text="Next wave starts in..." class="time-until-next-wave-text"/>
             </ui:VisualElement>
             <ui:VisualElement name="wave-timer-wrapper" class="wave-timer-wrapper" style="justify-content: center;">
@@ -31,9 +31,9 @@
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="burrow-flood-container" class="burrow-flood-container">
-            <ui:Image name="burrow-background" class="burrow-background" style="height: 1047px;"/>
+            <ui:Image name="burrow-background" class="burrow-background"/>
             <ui:ProgressBar value="100" name="flood-bar" title="100 %" high-value="100" class="flood-bar"/>
-            <ui:Image name="burrow-foreground" class="burrow-foreground" style="flex-grow: 1;"/>
+            <ui:Image name="burrow-foreground" class="burrow-foreground"/>
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>
