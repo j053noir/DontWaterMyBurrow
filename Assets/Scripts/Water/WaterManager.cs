@@ -156,14 +156,25 @@ namespace DontWaterMyBurrow.Water
 
         private void UpdateWaterFlow(float deltaTime)
         {
+            if (!_isSimulatingWater) return;
+
             GenerateNewWater();
 
             // Iterate over a copy of the water grid because we are modifying the original
             var waterGrid = new Dictionary<Vector2Int, float>(_waterGrid);
+            var waterFlow = new Dictionary<Vector2Int, Vector2Int>();
             foreach (var waterKvP in waterGrid)
             {
                 if (waterKvP.Value == 0)
                     continue;
+
+                // Assign default direction if on boundary
+                var defaultDir = GetDefaultLeakFlowDirection(waterKvP.Key);
+                if (defaultDir != Vector2Int.zero)
+                {
+                    waterFlow[waterKvP.Key] = defaultDir;
+                    if (_debugMode) Debug.Log($"[WaterManager] Assigned boundary default flow {defaultDir} to cell {waterKvP.Key}");
+                }
 
                 // If pressure is high enough, water will flow to adjacent cells
                 if (waterKvP.Value >= 0.5)
@@ -178,6 +189,8 @@ namespace DontWaterMyBurrow.Water
                     {
                         var nextPosition = waterKvP.Key + channelDirection;
                         MoveWater(waterKvP.Key, nextPosition, waterKvP.Value * _globalWaterPressure);
+                        waterFlow[waterKvP.Key] = channelDirection;
+                        if (_debugMode) Debug.Log($"[WaterManager] Assigned channel flow {channelDirection} to cell {waterKvP.Key}");
                     }
                     else
                     {
@@ -187,11 +200,16 @@ namespace DontWaterMyBurrow.Water
                         {
                             float pressurePerCell = waterKvP.Value * _globalWaterPressure / availableMoves.Count;
                             // Try to move following water flow vectors
+                            var flowResult = Vector2Int.zero;
                             foreach (var flowVector in availableMoves)
                             {
                                 var nextPosition = waterKvP.Key + flowVector;
                                 MoveWater(waterKvP.Key, nextPosition, pressurePerCell);
+                                flowResult += flowVector;
                             }
+                            var finalFlow = new Vector2Int(Mathf.Clamp(flowResult.x, -1, 1), Mathf.Clamp(flowResult.y, -1, 1));
+                            waterFlow[waterKvP.Key] = finalFlow;
+                            if (_debugMode) Debug.Log($"[WaterManager] Assigned dynamic pressure flow {finalFlow} to cell {waterKvP.Key}");
                         }
                     }
                 }
@@ -204,7 +222,9 @@ namespace DontWaterMyBurrow.Water
                 }
             }
 
+            if (_debugMode) Debug.Log($"[WaterManager] Publishing WaterFlowUpdatedEvent with {waterFlow.Count} flow cells.");
             EventBus.Publish(new WaterGridUpdateEvent(_waterGrid));
+            EventBus.Publish(new WaterFlowUpdatedEvent(waterFlow));
         }
 
         private List<Vector2Int> GetAvailableMoves(Vector2Int position)
@@ -301,6 +321,17 @@ namespace DontWaterMyBurrow.Water
             _channelDirections.Clear();
             _drainCells.Clear();
             EventBus.Publish(new ManagerReadyEvent(this.GetType()));
+        }
+
+        private Vector2Int GetDefaultLeakFlowDirection(Vector2Int leakPosition)
+        {
+            var dir = Vector2Int.zero;
+            if (leakPosition.x <= _mapGridConfig.MinXBoundary) dir.x += 1;
+            if (leakPosition.x >= _mapGridConfig.MaxXBoundary) dir.x -= 1;
+            if (leakPosition.y <= _mapGridConfig.MinYBoundary) dir.y += 1;
+            if (leakPosition.y >= _mapGridConfig.MaxYBoundary) dir.y -= 1;
+
+            return dir;
         }
 
         public bool IsCellOccupied(Vector2Int position)
