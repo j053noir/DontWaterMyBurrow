@@ -49,11 +49,7 @@ namespace DontWaterMyBurrow.Structures
 
             _position = SetDrainPosition();
 
-            transform.position = new Vector3(
-                _position.x * _mapGridConfig.TileSize,
-                _position.y * _mapGridConfig.TileSize,
-                0
-            );
+            transform.position = _mapGridConfig.GridToWorld(_position);
         }
 
         private void OnEnable()

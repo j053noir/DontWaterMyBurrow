@@ -20,8 +20,8 @@ namespace DontWaterMyBurrow.Data
         public Vector3 GridToWorld(Vector2Int gridPosition)
         {
             return new Vector3(
-                (gridPosition.x + 0.5f) * TileSize,
-                (gridPosition.y + 0.5f) * TileSize,
+                gridPosition.x * TileSize,
+                gridPosition.y * TileSize,
                 0
             );
         }
@@ -29,8 +29,8 @@ namespace DontWaterMyBurrow.Data
         public Vector2Int WorldToGrid(Vector3 worldPosition)
         {
             return new Vector2Int(
-                Mathf.RoundToInt(worldPosition.x / TileSize),
-                Mathf.RoundToInt(worldPosition.y / TileSize)
+                Mathf.FloorToInt(worldPosition.x / TileSize),
+                Mathf.FloorToInt(worldPosition.y / TileSize)
             );
         }
 

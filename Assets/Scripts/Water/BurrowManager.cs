@@ -24,11 +24,7 @@ namespace DontWaterMyBurrow.Water
         {
             if (_mapGridConfig == null) Debug.LogError("MapGridConfig is not assigned to BurrowManager");
 
-            transform.position = new Vector3(
-                _mapGridConfig.BurrowPosition.x * _mapGridConfig.TileSize,
-                _mapGridConfig.BurrowPosition.y * _mapGridConfig.TileSize,
-                0
-            );
+            transform.position = _mapGridConfig.GridToWorld(_mapGridConfig.BurrowPosition);
         }
 
         private void OnEnable()

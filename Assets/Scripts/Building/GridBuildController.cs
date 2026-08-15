@@ -10,6 +10,9 @@ namespace DontWaterMyBurrow.Building
 {
     public class GridBuildController : MonoBehaviour
     {
+        [Header("Config")]
+        [SerializeField] private MapGridConfigSO _mapGridConfig;
+
         [Header("Components")]
         [SerializeField] private SpriteRenderer _structurePreview;
         [SerializeField] private StructureDataSO _selectedStructureSO;
@@ -84,7 +87,7 @@ namespace DontWaterMyBurrow.Building
 
             _structurePreview.color = isValid ? _validColor : _invalidColor;
             _structurePreview.sprite = _selectedStructureSO.PreviewSprite;
-            _structurePreview.transform.position = GetBuildPosition();
+            _structurePreview.transform.position = _mapGridConfig.GridToWorld(_buildPosition);
             _structurePreview.enabled = _canBuild;
         }
 
@@ -93,13 +96,8 @@ namespace DontWaterMyBurrow.Building
             if (!_canBuild || !_isValid || !_selectedStructureSO) return;
 
             _buildPosition = @event.Position;
-            var gameObject = Instantiate(_selectedStructureSO.Prefab, GetBuildPosition(), Quaternion.identity);
+            var gameObject = Instantiate(_selectedStructureSO.Prefab, _mapGridConfig.GridToWorld(_buildPosition), Quaternion.identity);
             EventBus.Publish(new StructureBuiltEvent(_selectedStructureSO.Type, _buildPosition, gameObject, _selectedStructureSO));
-        }
-
-        private Vector3 GetBuildPosition()
-        {
-            return new Vector3(_buildPosition.x, _buildPosition.y, 0);
         }
     }
 }
