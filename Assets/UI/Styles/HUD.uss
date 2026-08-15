@@ -81,7 +81,7 @@ VisualElement {
 }
 
 .flood-bar > .unity-progress-bar__container > .unity-progress-bar__background > .unity-progress-bar__progress {
-    background-color: rgba(0, 162, 255, 0.31);
+    background-color: rgba(15, 134, 167, 0.31);
 }
 
 .flood-bar > .unity-progress-bar__container > .unity-progress-bar__background > .unity-progress-bar__title-container > .unity-progress-bar__title {
