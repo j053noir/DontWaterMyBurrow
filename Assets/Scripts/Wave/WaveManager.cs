@@ -7,6 +7,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using DontWaterMyBurrow.Wave.States;
 using DontWaterMyBurrow.Water.Events;
+using DontWaterMyBurrow.Hazards;
 
 namespace DontWaterMyBurrow.Wave
 {
@@ -18,6 +19,7 @@ namespace DontWaterMyBurrow.Wave
         [SerializeField] private List<Vector2Int> _currentLeekingPositions;
         [SerializeField] private float _timeUntilNextWave;
         [SerializeField] private float _defaultTimeUntilNextWave = 30;
+        [SerializeField] private Transform _hazardsParent;
 
 
         [Header("Config")]
@@ -42,6 +44,8 @@ namespace DontWaterMyBurrow.Wave
 
             ActiveWaveState = new ActiveWaveState(this);
             NextWaveState = new NextWaveState(this);
+
+            if (_hazardsParent == null) _hazardsParent = transform;
         }
 
         private void OnEnable()
@@ -167,8 +171,13 @@ namespace DontWaterMyBurrow.Wave
             }
 
             var choice = Random.Range(0, _currentLeekingPositions.Count);
-            var spawnPosition = new Vector3(_currentLeekingPositions[choice].x, _currentLeekingPositions[choice].y, 0);
-            Instantiate(hazard.Prefab, spawnPosition, Quaternion.identity);
+            var spawnPosition = _mapGridConfig.GridToWorld(_currentLeekingPositions[choice]);
+            var hazardInstance = Instantiate(hazard.Prefab, spawnPosition, Quaternion.identity);
+            if (debugMode && hazardInstance.TryGetComponent(out HazardsController controller))
+            {
+                controller.EnableDebugMode();
+            }
+            hazardInstance.transform.parent = _hazardsParent;
             var cellPosition = _currentLeekingPositions[choice];
             EventBus.Publish(new HazardSpawnedEvent(hazard.Type, cellPosition));
         }

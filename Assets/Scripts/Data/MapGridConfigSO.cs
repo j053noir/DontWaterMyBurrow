@@ -17,19 +17,20 @@ namespace DontWaterMyBurrow.Data
         [field: Header("Burrow")]
         [field: SerializeField] public Vector2Int BurrowPosition { get; private set; } = Vector2Int.zero;
 
-        public Vector2Int GridToWorld(GameObject owner, Vector2Int gridPosition)
+        public Vector3 GridToWorld(Vector2Int gridPosition)
         {
-            return new Vector2Int(
-                gridPosition.x + Mathf.RoundToInt(owner.transform.position.x / TileSize),
-                gridPosition.y + Mathf.RoundToInt(owner.transform.position.y / TileSize)
+            return new Vector3(
+                (gridPosition.x + 0.5f) * TileSize,
+                (gridPosition.y + 0.5f) * TileSize,
+                0
             );
         }
 
-        public Vector2Int WorldToGrid(GameObject owner, Vector3 worldPosition)
+        public Vector2Int WorldToGrid(Vector3 worldPosition)
         {
             return new Vector2Int(
-                Mathf.RoundToInt(worldPosition.x - owner.transform.position.x / TileSize),
-                Mathf.RoundToInt(worldPosition.y - owner.transform.position.y / TileSize)
+                Mathf.RoundToInt(worldPosition.x / TileSize),
+                Mathf.RoundToInt(worldPosition.y / TileSize)
             );
         }
 
