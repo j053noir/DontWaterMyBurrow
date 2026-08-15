@@ -19,10 +19,30 @@ PrefabInstance:
     - target: {fileID: 788087622753144824, guid: cbc86652d812eaf48aa9ebee62df4f86, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 540a83b90aabc924b91efa8df744a527, type: 3}
+      objectReference: {fileID: 21300000, guid: dc867fb71c1ef844482add9f193228ac, type: 3}
+    - target: {fileID: 788087622753144824, guid: cbc86652d812eaf48aa9ebee62df4f86, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 788087622753144824, guid: cbc86652d812eaf48aa9ebee62df4f86, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 788087622753144824, guid: cbc86652d812eaf48aa9ebee62df4f86, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1538006847515168801, guid: cbc86652d812eaf48aa9ebee62df4f86, type: 3}
       propertyPath: m_Name
       value: Mud
+      objectReference: {fileID: 0}
+    - target: {fileID: 1538006847515168801, guid: cbc86652d812eaf48aa9ebee62df4f86, type: 3}
+      propertyPath: m_TagString
+      value: Mud
+      objectReference: {fileID: 0}
+    - target: {fileID: 4484865822345432765, guid: cbc86652d812eaf48aa9ebee62df4f86, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6210493519830317324, guid: cbc86652d812eaf48aa9ebee62df4f86, type: 3}
       propertyPath: m_LocalPosition.x

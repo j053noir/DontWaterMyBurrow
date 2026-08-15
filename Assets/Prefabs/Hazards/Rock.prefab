@@ -16,6 +16,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Rock
       objectReference: {fileID: 0}
+    - target: {fileID: 4484865822345432765, guid: cbc86652d812eaf48aa9ebee62df4f86, type: 3}
+      propertyPath: m_Offset.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4484865822345432765, guid: cbc86652d812eaf48aa9ebee62df4f86, type: 3}
+      propertyPath: m_Offset.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6210493519830317324, guid: cbc86652d812eaf48aa9ebee62df4f86, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

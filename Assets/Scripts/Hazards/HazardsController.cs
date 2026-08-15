@@ -1,9 +1,10 @@
-using System;
 using UnityEngine;
 using DontWaterMyBurrow.Core;
 using DontWaterMyBurrow.Wave.Events;
 using DontWaterMyBurrow.Structures;
-using DontWaterMyBurrow.Structures.Events;
+using DontWaterMyBurrow.Water.Events;
+using DontWaterMyBurrow.Data;
+using System.Collections.Generic;
 
 namespace DontWaterMyBurrow.Hazards
 {
@@ -11,97 +12,135 @@ namespace DontWaterMyBurrow.Hazards
     [RequireComponent(typeof(Collider2D))]
     public class HazardsController : MonoBehaviour
     {
+        [Header("Config")]
+        [SerializeField] MapGridConfigSO _mapGridConfig;
         [SerializeField] private HazardType _hazardType;
-        [SerializeField] private Vector2 _currentFlowVector;
         [SerializeField] private int _damageAmount;
-        [SerializeField] private float _speed = 5.0f;
+        [SerializeField] private float _speed = 1.25f;
 
+        [Header("Debug")]
+        [SerializeField] private bool _debuMode = false;
+
+        private Dictionary<Vector2Int, Vector2Int> _waterFlows;
         private Rigidbody2D _rigidbody2D;
         private Collider2D _collider2D;
 
-    public HazardType Type => _hazardType;
+        public HazardType Type => _hazardType;
 
-    private void Awake()
-    {
-        _rigidbody2D = GetComponent<Rigidbody2D>();
-        _collider2D = GetComponent<Collider2D>();
-    }
-
-    private void FixedUpdate()
-    {
-        MoveWithCurrent();
-    }
-
-    private void MoveWithCurrent()
-    {
-        if (_rigidbody2D.bodyType == RigidbodyType2D.Dynamic)
+        private void Awake()
         {
-            _rigidbody2D.MovePosition(_rigidbody2D.position + _currentFlowVector * _speed * Time.fixedDeltaTime);
+            _rigidbody2D = GetComponent<Rigidbody2D>();
+            _collider2D = GetComponent<Collider2D>();
+        }
+
+        private void OnEnable()
+        {
+            EventBus.Subscribe<WaterFlowUpdatedEvent>(OnWaterFlowUpdated);
+        }
+
+        private void OnDisable()
+        {
+            EventBus.Unsubscribe<WaterFlowUpdatedEvent>(OnWaterFlowUpdated);
+        }
+
+        private void FixedUpdate()
+        {
+            MoveWithCurrent();
+        }
+
+        private void MoveWithCurrent()
+        {
+            if (_rigidbody2D.bodyType == RigidbodyType2D.Dynamic)
+            {
+                var gridPostion = _mapGridConfig.WorldToGrid(transform.position);
+                if (_waterFlows == null ||
+                    !_waterFlows.TryGetValue(gridPostion, out var flow) ||
+                    flow == Vector2Int.zero)
+                {
+                    return;
+                }
+                var targetPosition = _rigidbody2D.position + _speed * Time.fixedDeltaTime * (Vector2)flow;
+                _rigidbody2D.MovePosition(targetPosition);
+            }
+        }
+
+        private void OnCollisionEnter2D(Collision2D collision)
+        {
+            if (_debuMode) Debug.Log($"Collisioned with {collision.gameObject.tag}");
+
+            if (collision.gameObject.TryGetComponent<StructureController>(out var structure))
+            {
+                OnCollisionWithStructure(structure);
+            }
+            else if (collision.gameObject.TryGetComponent<HazardsController>(out var hazard))
+            {
+                OnCollisionWithHazard(hazard);
+            }
+            else if (_debuMode)
+            {
+                Debug.Log($"Collisioned with uknown object: {collision.gameObject.name} {collision.gameObject.tag}");
+            }
+        }
+
+        private void OnWaterFlowUpdated(WaterFlowUpdatedEvent @event)
+        {
+            _waterFlows = @event.CellsFlow;
+        }
+
+        protected virtual void OnCollisionWithStructure(StructureController structure)
+        {
+            // Create a dam if the hazard is a log and the structure is a sandbag
+            if (_hazardType == HazardType.Log && structure.Type == StructureType.SandBag)
+            {
+                CreateDam();
+            }
+            // Deal damage if the hazard is not leaves
+            else if (_hazardType != HazardType.Leaves)
+            {
+                structure.TakeDamage(_damageAmount);
+            }
+            // Leaves only interact with water pumps
+            else if (_hazardType == HazardType.Leaves && structure is WaterPumpController waterPump)
+            {
+                waterPump.SetClogState(true);
+                // TODO: Put leaves in object pool
+                gameObject.SetActive(false);
+            }
+        }
+
+        private void OnCollisionWithHazard(HazardsController hazard)
+        {
+            // Create a dam if both hazards are logs or rock
+            if (_hazardType == HazardType.Log && (hazard.Type == HazardType.Rock || hazard.Type == HazardType.Log))
+            {
+                CreateDam();
+            }
+        }
+
+        private void CreateDam()
+        {
+            if (_hazardType != HazardType.Log)
+            {
+                return;
+            }
+
+            _rigidbody2D.bodyType = RigidbodyType2D.Static;
+            _collider2D.isTrigger = true;
+
+            if (TryGetComponent<DamController>(out var dam))
+            {
+                dam.enabled = true;
+            }
+        }
+
+        public void EnableDebugMode()
+        {
+            _debuMode = true;
+        }
+
+        public void DisableDebugMode()
+        {
+            _debuMode = false;
         }
     }
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        Debug.Log($"Collisioned with {collision.gameObject.tag}");
-
-        if (collision.gameObject.TryGetComponent<StructureController>(out var structure))
-        {
-            OnCollisionWithStructure(structure);
-        }
-        else if (collision.gameObject.TryGetComponent<HazardsController>(out var hazard))
-        {
-            OnCollisionWithHazard(hazard);
-        }
-        else
-        {
-            Debug.Log($"Collisioned with uknown object: {collision.gameObject.name} {collision.gameObject.tag}");
-        }
-    }
-
-    protected virtual void OnCollisionWithStructure(StructureController structure)
-    {
-        // Create a dam if the hazard is a log and the structure is a sandbag
-        if (_hazardType == HazardType.Log && structure.Type == StructureType.SandBag)
-        {
-            CreateDam();
-        }
-        // Deal damage if the hazard is not leaves
-        else if (_hazardType != HazardType.Leaves)
-        {
-            structure.TakeDamage(_damageAmount);
-        }
-        // Leaves only interact with water pumps
-        else if (_hazardType == HazardType.Leaves && structure is WaterPumpController waterPump)
-        {
-            waterPump.SetClogState(true);
-            // TODO: Put leaves in object pool
-            gameObject.SetActive(false);
-        }
-    }
-
-    private void OnCollisionWithHazard(HazardsController hazard)
-    {
-        // Create a dam if both hazards are logs or rock
-        if (_hazardType == HazardType.Log && (hazard.Type == HazardType.Rock || hazard.Type == HazardType.Log))
-        {
-            CreateDam();
-        }
-    }
-
-    private void CreateDam()
-    {
-        if (_hazardType != HazardType.Log)
-        {
-            return;
-        }
-
-        _rigidbody2D.bodyType = RigidbodyType2D.Static;
-        _collider2D.isTrigger = true;
-
-        if (TryGetComponent<DamController>(out var dam))
-        {
-            dam.enabled = true;
-        }
-    }
-}
 }
