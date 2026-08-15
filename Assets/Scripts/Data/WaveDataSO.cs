@@ -15,6 +15,10 @@ namespace DontWaterMyBurrow.Data
         /// </summary>
         public float SpawnInterval;
         /// <summary>
+        /// Maximum number of hazards to spawn in this wave. Set to 0 or negative for unlimited (interval-only).
+        /// </summary>
+        public int MaxCount;
+        /// <summary>
         /// Reference to the hazard prefab.
         /// </summary>
         public GameObject Prefab;

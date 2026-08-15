@@ -30,6 +30,7 @@ namespace DontWaterMyBurrow.Wave
 
         private float _waveTimer = 0f;
         private Dictionary<HazardsSpawnData, float> _hazardTimers;
+        private Dictionary<HazardsSpawnData, int> _hazardSpawnCounts;
 
         private StateMachine _stateMachine;
         public ActiveWaveState ActiveWaveState { get; private set; }
@@ -38,6 +39,7 @@ namespace DontWaterMyBurrow.Wave
         private void Awake()
         {
             _hazardTimers = new();
+            _hazardSpawnCounts = new();
             _currentLeekingPositions = new();
 
             _stateMachine = new StateMachine();
@@ -112,14 +114,20 @@ namespace DontWaterMyBurrow.Wave
             _timeUntilNextWave = _defaultTimeUntilNextWave;
             _waveTimer = 0f;
             _hazardTimers.Clear();
+            _hazardSpawnCounts.Clear();
             EventBus.Publish(new ManagerReadyEvent(this.GetType()));
         }
 
         private void SpawnHazards()
         {
-            // Spawn hazards based on their intervals
+            // Spawn hazards based on their intervals and max count
             foreach (var hazard in _currentWaveData.HazardsToSpawn)
             {
+                if (hazard.MaxCount > 0 && _hazardSpawnCounts.TryGetValue(hazard, out int count) && count >= hazard.MaxCount)
+                {
+                    continue;
+                }
+
                 _hazardTimers[hazard] += Time.deltaTime;
                 if (_hazardTimers[hazard] >= hazard.SpawnInterval)
                 {
@@ -135,10 +143,12 @@ namespace DontWaterMyBurrow.Wave
             _waveTimer = _currentWaveData.WaveDuration;
             _currentLeekingPositions.Clear();
             _hazardTimers.Clear();
+            _hazardSpawnCounts.Clear();
 
             foreach (var hazard in _currentWaveData.HazardsToSpawn)
             {
                 _hazardTimers[hazard] = 0f;
+                _hazardSpawnCounts[hazard] = 0;
             }
 
             EventBus.Publish(new WaveStartedEvent(_currentWaveData.WaveNumber));
@@ -172,12 +182,14 @@ namespace DontWaterMyBurrow.Wave
 
             var choice = Random.Range(0, _currentLeekingPositions.Count);
             var spawnPosition = _mapGridConfig.GridToWorld(_currentLeekingPositions[choice]);
-            var hazardInstance = Instantiate(hazard.Prefab, spawnPosition, Quaternion.identity);
+            var hazardInstance = Instantiate(hazard.Prefab, spawnPosition, Quaternion.identity, _hazardsParent);
             if (debugMode && hazardInstance.TryGetComponent(out HazardsController controller))
             {
                 controller.EnableDebugMode();
             }
-            hazardInstance.transform.parent = _hazardsParent;
+
+            _hazardSpawnCounts[hazard] = (_hazardSpawnCounts.TryGetValue(hazard, out int currentCount) ? currentCount : 0) + 1;
+
             var cellPosition = _currentLeekingPositions[choice];
             EventBus.Publish(new HazardSpawnedEvent(hazard.Type, cellPosition));
         }

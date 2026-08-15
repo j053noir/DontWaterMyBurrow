@@ -16,7 +16,8 @@ MonoBehaviour:
   WaveDuration: 300
   HazardsToSpawn:
   - Type: 0
-    SpawnInterval: 5
+    SpawnInterval: 10
+    MaxCount: 10
     Prefab: {fileID: 972604368631835179, guid: 5046fa83f635f354cbf966625cf3b4f0, type: 3}
   WaterLeekingPositions:
   - {x: -8, y: -8}
