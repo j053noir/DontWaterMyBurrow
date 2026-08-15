@@ -121,7 +121,7 @@ namespace DontWaterMyBurrow.Resources
             {
                 var randomPosition = GetRandomPosition();
                 var worldPosition = _mapGridConfig.GridToWorld(randomPosition);
-                var resourceObject = Instantiate(spawnConfig.resourcePrefab, worldPosition, Quaternion.identity);
+                var resourceObject = Instantiate(spawnConfig.resourcePrefab, worldPosition, Quaternion.identity, _resourcesParent);
 
                 EventBus.Publish(new ResourceSpawnedEvent(resourceObject, randomPosition, spawnConfig.resourceType));
             }
