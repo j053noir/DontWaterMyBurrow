@@ -208,6 +208,10 @@ namespace DontWaterMyBurrow.Water
                                 flowResult += flowVector;
                             }
                             var finalFlow = new Vector2Int(Mathf.Clamp(flowResult.x, -1, 1), Mathf.Clamp(flowResult.y, -1, 1));
+                            if (finalFlow == Vector2Int.zero && availableMoves.Count > 0)
+                            {
+                                finalFlow = availableMoves[0];
+                            }
                             waterFlow[waterKvP.Key] = finalFlow;
                             if (_debugMode) Debug.Log($"[WaterManager] Assigned dynamic pressure flow {finalFlow} to cell {waterKvP.Key}");
                         }
