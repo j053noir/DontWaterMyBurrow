@@ -1,15 +1,12 @@
-using System;
 using System.Collections.Generic;
-using UnityEngine;
+using DontWaterMyBurrow.Building.Events;
 using DontWaterMyBurrow.Core;
+using DontWaterMyBurrow.Data;
 using DontWaterMyBurrow.Game;
 using DontWaterMyBurrow.Game.Events;
-using DontWaterMyBurrow.Building;
 using DontWaterMyBurrow.Resources.Events;
-using Random = UnityEngine.Random;
-using DontWaterMyBurrow.Data;
-using DontWaterMyBurrow.Building.Events;
 using DontWaterMyBurrow.Structures.Events;
+using UnityEngine;
 
 namespace DontWaterMyBurrow.Resources
 {
@@ -23,17 +20,20 @@ namespace DontWaterMyBurrow.Resources
 
     public class ResourceSpawner : MonoBehaviour
     {
-        [Header("Spawn Configs")]
+        [Header("Config")]
         [SerializeField] private List<SpawnConfig> _spawnConfigs;
-
-        [Header("Dependencies")]
+        [SerializeField] private Transform _resourcesParent;
         [SerializeField] private MapGridConfigSO _mapGridConfig;
+
+        [Header("Debug")]
+        [SerializeField] private bool _debugMode = false;
 
         private HashSet<Vector2Int> _occupiedCells;
 
         private void Awake()
         {
             _occupiedCells = new();
+            if (_resourcesParent == null) _resourcesParent = transform;
         }
 
 
@@ -120,7 +120,7 @@ namespace DontWaterMyBurrow.Resources
             for (int i = 0; i < spawnConfig.maxResources; i++)
             {
                 var randomPosition = GetRandomPosition();
-                var worldPosition = new Vector3(randomPosition.x, randomPosition.y, 0);
+                var worldPosition = _mapGridConfig.GridToWorld(randomPosition);
                 var resourceObject = Instantiate(spawnConfig.resourcePrefab, worldPosition, Quaternion.identity);
 
                 EventBus.Publish(new ResourceSpawnedEvent(resourceObject, randomPosition, spawnConfig.resourceType));
@@ -131,14 +131,11 @@ namespace DontWaterMyBurrow.Resources
         {
             if (_mapGridConfig == null)
             {
-                Debug.LogError("[ResourceSpawner] _mapGridConfig is not assigned in the Inspector!");
+                if (_debugMode) Debug.LogError("[ResourceSpawner] _mapGridConfig is not assigned in the Inspector!");
                 return Vector2Int.zero;
             }
 
-            var randomPosition = new Vector2Int(
-                Random.Range(_mapGridConfig.MinXBoundary, _mapGridConfig.MaxXBoundary), // X within boundaries
-                Random.Range(_mapGridConfig.MinYBoundary, _mapGridConfig.MaxYBoundary) // Y within boundaries
-            );
+            var randomPosition = GenerateRandomPosition();
 
             int attempts = 0;
             int maxAttempts = 100;
@@ -146,11 +143,18 @@ namespace DontWaterMyBurrow.Resources
             {
                 attempts++;
                 // Keep generating random positions until an empty cell is found
-                randomPosition = new Vector2Int(
-                    Random.Range(_mapGridConfig.MinXBoundary, _mapGridConfig.MaxXBoundary), // X within boundaries
-                    Random.Range(_mapGridConfig.MinYBoundary, _mapGridConfig.MaxYBoundary) // Y within boundaries
-                );
+                randomPosition = GenerateRandomPosition();
             }
+
+            return randomPosition;
+        }
+
+        private Vector2Int GenerateRandomPosition()
+        {
+            var randomPosition = new Vector2Int(
+                Random.Range(_mapGridConfig.MinXBoundary + 1, _mapGridConfig.MaxXBoundary - 1), // X within boundaries
+                Random.Range(_mapGridConfig.MinYBoundary + 1, _mapGridConfig.MaxYBoundary - 1) // Y within boundaries
+            );
 
             return randomPosition;
         }
