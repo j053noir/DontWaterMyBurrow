@@ -19,7 +19,7 @@ namespace DontWaterMyBurrow.Hazards
         [SerializeField] private float _speed = 1.25f;
 
         [Header("Debug")]
-        [SerializeField] private bool _debuMode = false;
+        [SerializeField] private bool _debugMode = false;
 
         private Dictionary<Vector2Int, Vector2Int> _waterFlows;
         private Rigidbody2D _rigidbody2D;
@@ -52,6 +52,12 @@ namespace DontWaterMyBurrow.Hazards
         {
             if (_rigidbody2D.bodyType == RigidbodyType2D.Dynamic)
             {
+                if (_mapGridConfig == null)
+                {
+                    if (_debugMode) Debug.LogWarning("[HazardsController] _mapGridConfig is not assigned!");
+                    return;
+                }
+
                 var gridPostion = _mapGridConfig.WorldToGrid(transform.position);
                 if (_waterFlows == null ||
                     !_waterFlows.TryGetValue(gridPostion, out var flow) ||
@@ -60,13 +66,22 @@ namespace DontWaterMyBurrow.Hazards
                     return;
                 }
                 var targetPosition = _rigidbody2D.position + _speed * Time.fixedDeltaTime * (Vector2)flow;
+
+                float minX = (_mapGridConfig.MinXBoundary + 0.5f) * _mapGridConfig.TileSize;
+                float maxX = (_mapGridConfig.MaxXBoundary + 0.5f) * _mapGridConfig.TileSize;
+                float minY = (_mapGridConfig.MinYBoundary + 0.5f) * _mapGridConfig.TileSize;
+                float maxY = (_mapGridConfig.MaxYBoundary + 0.5f) * _mapGridConfig.TileSize;
+
+                targetPosition.x = Mathf.Clamp(targetPosition.x, minX, maxX);
+                targetPosition.y = Mathf.Clamp(targetPosition.y, minY, maxY);
+
                 _rigidbody2D.MovePosition(targetPosition);
             }
         }
 
         private void OnCollisionEnter2D(Collision2D collision)
         {
-            if (_debuMode) Debug.Log($"Collisioned with {collision.gameObject.tag}");
+            if (_debugMode) Debug.Log($"Collisioned with {collision.gameObject.tag}");
 
             if (collision.gameObject.TryGetComponent<StructureController>(out var structure))
             {
@@ -76,7 +91,7 @@ namespace DontWaterMyBurrow.Hazards
             {
                 OnCollisionWithHazard(hazard);
             }
-            else if (_debuMode)
+            else if (_debugMode)
             {
                 Debug.Log($"Collisioned with uknown object: {collision.gameObject.name} {collision.gameObject.tag}");
             }
@@ -135,12 +150,12 @@ namespace DontWaterMyBurrow.Hazards
 
         public void EnableDebugMode()
         {
-            _debuMode = true;
+            _debugMode = true;
         }
 
         public void DisableDebugMode()
         {
-            _debuMode = false;
+            _debugMode = false;
         }
     }
 }

@@ -45,7 +45,7 @@ BoxCollider2D:
   m_Enabled: 1
   serializedVersion: 3
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: dc1558eca6f9fd44295bc825d0b30d57, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -94,7 +94,7 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
-  m_LinearDamping: 0
+  m_LinearDamping: 3
   m_AngularDamping: 0.05
   m_GravityScale: 0
   m_Material: {fileID: 0}
@@ -123,7 +123,7 @@ MonoBehaviour:
   _mapGridConfig: {fileID: 11400000, guid: a627ba1f0afad054f998a3e9a4a03019, type: 2}
   _hazardType: 0
   _damageAmount: 25
-  _speed: 1.25
+  _speed: 3
   _debuMode: 1
 --- !u!1 &8402807104436142496
 GameObject:
@@ -204,7 +204,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: a4aaca6e6a3b96948a2120fe26513449, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
