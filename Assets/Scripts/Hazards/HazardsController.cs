@@ -26,6 +26,7 @@ namespace DontWaterMyBurrow.Hazards
         private Collider2D _collider2D;
 
         public HazardType Type => _hazardType;
+        public int DamageAmount => _damageAmount;
 
         private void Awake()
         {

@@ -3,9 +3,12 @@ using DontWaterMyBurrow.Core;
 using DontWaterMyBurrow.Data;
 using DontWaterMyBurrow.Building.Events;
 using DontWaterMyBurrow.Structures.Events;
+using DontWaterMyBurrow.Hazards;
 
 namespace DontWaterMyBurrow.Structures
 {
+    [RequireComponent(typeof(Collider2D))]
+    [RequireComponent(typeof(Rigidbody2D))]
     public class StructureController : MonoBehaviour
     {
         [SerializeField] private StructureType _type;
@@ -54,6 +57,14 @@ namespace DontWaterMyBurrow.Structures
             // TODO: Implement object pooling to about instancing new ones
             EventBus.Publish(new StructureDestroyedEvent(Position, gameObject));
             Destroy(this.gameObject);
+        }
+
+        private void OnCollisionEnter2D(Collision2D collision)
+        {
+            if (collision.gameObject.TryGetComponent(out HazardsController hazard))
+            {
+                TakeDamage(hazard.DamageAmount);
+            }
         }
     }
 }
