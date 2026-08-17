@@ -2,11 +2,11 @@ using UnityEngine;
 
 namespace DontWaterMyBurrow.Player.Events
 {
-    public readonly struct PlayerOpenedBuilMenuEvent
+    public readonly struct PlayerOpenedBuildMenuEvent
     {
         public readonly Vector2Int TargetCell;
 
-        public PlayerOpenedBuilMenuEvent(Vector2Int targetCell)
+        public PlayerOpenedBuildMenuEvent(Vector2Int targetCell)
         {
             TargetCell = targetCell;
         }

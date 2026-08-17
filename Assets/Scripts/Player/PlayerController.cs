@@ -261,7 +261,7 @@ namespace DontWaterMyBurrow.Player
 
         public void OnBuild(InputValue value)
         {
-            if (!value.isPressed) return;
+            if (!value.isPressed || StateMachine.CurrentState is PlayerBuildState) return;
 
             BuildState = new PlayerBuildState(this, _targetCell, StateMachine.CurrentState);
             StateMachine.ChangeState(BuildState);

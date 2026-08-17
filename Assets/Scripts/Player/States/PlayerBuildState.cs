@@ -22,7 +22,7 @@ namespace DontWaterMyBurrow.Player.States
         {
             if (_player.DebugMode) Debug.Log("Enter from Player Build State");
 
-            EventBus.Publish(new PlayerOpenedBuilMenuEvent(_targetCell));
+            EventBus.Publish(new PlayerOpenedBuildMenuEvent(_targetCell));
         }
 
         public void Exit()
