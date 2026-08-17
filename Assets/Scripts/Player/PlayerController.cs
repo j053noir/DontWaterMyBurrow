@@ -12,6 +12,7 @@ using DontWaterMyBurrow.Player.States;
 using DontWaterMyBurrow.Game.Events;
 using DontWaterMyBurrow.Game;
 using DontWaterMyBurrow.Data;
+using System;
 
 namespace DontWaterMyBurrow.Player
 {
@@ -43,6 +44,7 @@ namespace DontWaterMyBurrow.Player
         public PlayerNormalState NormalState { get; private set; }
         public PlayerMudState MudState { get; private set; }
         public PlayerUncloggingState UncloggingState { get; private set; }
+        public PlayerBuildState BuildState { get; private set; }
 
         private void Awake()
         {
@@ -63,12 +65,16 @@ namespace DontWaterMyBurrow.Player
         {
             EventBus.Subscribe<GameStateChangedEvent>(OnGameStateChanged);
             EventBus.Subscribe<PlayerOnMudEvent>(OnPlayerOnMudEvent);
+            EventBus.Subscribe<StructureBuiltEvent>(OnStructureBuilt);
+            EventBus.Subscribe<BuildFailedEvent>(OnBuildFailed);
         }
 
         private void OnDisable()
         {
             EventBus.Unsubscribe<GameStateChangedEvent>(OnGameStateChanged);
             EventBus.Unsubscribe<PlayerOnMudEvent>(OnPlayerOnMudEvent);
+            EventBus.Unsubscribe<StructureBuiltEvent>(OnStructureBuilt);
+            EventBus.Unsubscribe<BuildFailedEvent>(OnBuildFailed);
         }
 
         private void Update()
@@ -114,6 +120,22 @@ namespace DontWaterMyBurrow.Player
         private void OnPlayerOnMudEvent(PlayerOnMudEvent @event)
         {
             StateMachine.ChangeState(@event.OnMud ? MudState : NormalState);
+        }
+
+        private void OnBuildFailed(BuildFailedEvent @event)
+        {
+            if (StateMachine.CurrentState is PlayerBuildState buildState)
+            {
+                StateMachine.ChangeState(buildState.PreviousState);
+            }
+        }
+
+        private void OnStructureBuilt(StructureBuiltEvent @event)
+        {
+            if (StateMachine.CurrentState is PlayerBuildState buildState)
+            {
+                StateMachine.ChangeState(buildState.PreviousState);
+            }
         }
 
         private Vector2Int TargetCell()
@@ -180,6 +202,19 @@ namespace DontWaterMyBurrow.Player
         {
             if (!value.isPressed) return;
 
+            if (StateMachine.CurrentState is PlayerBuildState buildState)
+            {
+                EventBus.Publish(new ConfirmBuildEvent(_targetCell));
+                StateMachine.ChangeState(buildState.PreviousState);
+            }
+            else
+            {
+                InteractWith();
+            }
+        }
+
+        public void InteractWith()
+        {
             var objetive = transform.position + (Vector3)_facingDirection * _interactionDistance;
             var hit = Physics2D.OverlapCircle(objetive, 0.3f);
 
@@ -228,9 +263,26 @@ namespace DontWaterMyBurrow.Player
         {
             if (!value.isPressed) return;
 
-            var targetBuildCell = TargetCell();
+            BuildState = new PlayerBuildState(this, _targetCell, StateMachine.CurrentState);
+            StateMachine.ChangeState(BuildState);
+        }
 
-            EventBus.Publish(new ConfirmBuildEvent(targetBuildCell));
+        public void OnCancel(InputValue value)
+        {
+            if (!value.isPressed) return;
+
+            if (StateMachine.CurrentState is PlayerBuildState buildState)
+            {
+                StateMachine.ChangeState(buildState.PreviousState);
+            }
+        }
+
+        public void OnMap(InputValue value)
+        {
+            if (!value.isPressed) return;
+
+            // TODO: Show all map
+            if (_debugMode) Debug.Log("Map opened");
         }
     }
 }
