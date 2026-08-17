@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SandBagData
   m_EditorClassIdentifier: Assembly-CSharp::DontWaterMyBurrow.Data.StructureDataSO
   Prefab: {fileID: 4292202059647528450, guid: 57a701fe799204344873cbbc5387a0d6, type: 3}
-  PreviewSprite: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
+  PreviewSprite: {fileID: 21300000, guid: 911b5278e70f0a94e967296f4e0b215c, type: 3}
   Type: 1
   Costs:
   - Type: 2

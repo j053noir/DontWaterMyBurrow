@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: WoodChannelData
   m_EditorClassIdentifier: Assembly-CSharp::DontWaterMyBurrow.Data.StructureDataSO
   Prefab: {fileID: 7863289671966130637, guid: b0cb050ee7f0ae04ea593518d803aed7, type: 3}
-  PreviewSprite: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
+  PreviewSprite: {fileID: 21300000, guid: 345fa253cec8a70469e710f778cc8fa9, type: 3}
   Type: 0
   Costs:
   - Type: 0

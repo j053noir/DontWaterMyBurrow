@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: WaterPumpData
   m_EditorClassIdentifier: Assembly-CSharp::DontWaterMyBurrow.Data.StructureDataSO
   Prefab: {fileID: 1444635149182165040, guid: 5038d2f536288674695fd71bbb685d82, type: 3}
-  PreviewSprite: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
+  PreviewSprite: {fileID: 21300000, guid: 55523f5a84ba27a41ab300981cd51db7, type: 3}
   Type: 2
   Costs:
   - Type: 0

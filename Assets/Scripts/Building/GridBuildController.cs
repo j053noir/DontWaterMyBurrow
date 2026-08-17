@@ -5,7 +5,6 @@ using DontWaterMyBurrow.Game;
 using DontWaterMyBurrow.Game.Events;
 using DontWaterMyBurrow.Player.Events;
 using DontWaterMyBurrow.Building.Events;
-using System;
 
 namespace DontWaterMyBurrow.Building
 {
