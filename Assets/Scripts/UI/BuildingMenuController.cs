@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using DontWaterMyBurrow.Building.Events;
 using DontWaterMyBurrow.Core;
@@ -8,6 +9,14 @@ using UnityEngine.UIElements;
 
 namespace DontWaterMyBurrow.UI
 {
+    [Serializable]
+    public class BuildingMenuInfo
+    {
+        public StructureType Type { get; set; }
+        public Button Button { get; set; }
+        public Action Handle { get; set; }
+    }
+
     public class BuildingMenuController : MonoBehaviour
     {
         [Header("Config")]
@@ -17,7 +26,7 @@ namespace DontWaterMyBurrow.UI
         [Header("UI Components")]
         [SerializeField] private UIDocument _menuDocument;
         [SerializeField] private VisualElement _root;
-        private Dictionary<StructureType, Button> _menuButtons;
+        private List<BuildingMenuInfo> _menuButtons;
 
         [Header("Debug")]
         [SerializeField] private bool _debugMode = false;
@@ -25,21 +34,24 @@ namespace DontWaterMyBurrow.UI
         public void Awake()
         {
             _menuButtons = new();
+
+            InitializeUI();
         }
 
         public void OnEnable()
         {
-            InitializeUI();
-
-            EventBus.Subscribe<PlayerOpenedBuilMenuEvent>(OnPlayerOpenedBuilMenuEvent);
+            EventBus.Subscribe<PlayerOpenedBuildMenuEvent>(OnPlayerOpenedBuilMenuEvent);
             EventBus.Subscribe<PlayerClosedBuildMenuEvent>(OnPlayerClosedBuildMenuEvent);
         }
 
         public void OnDisable()
         {
-            EventBus.Unsubscribe<PlayerOpenedBuilMenuEvent>(OnPlayerOpenedBuilMenuEvent);
+            EventBus.Unsubscribe<PlayerOpenedBuildMenuEvent>(OnPlayerOpenedBuilMenuEvent);
             EventBus.Unsubscribe<PlayerClosedBuildMenuEvent>(OnPlayerClosedBuildMenuEvent);
+        }
 
+        public void OnDestroy()
+        {
             ClearMenuButtons();
         }
 
@@ -48,7 +60,7 @@ namespace DontWaterMyBurrow.UI
             if (_root != null) _root.style.display = DisplayStyle.None;
         }
 
-        private void OnPlayerOpenedBuilMenuEvent(PlayerOpenedBuilMenuEvent @event)
+        private void OnPlayerOpenedBuilMenuEvent(PlayerOpenedBuildMenuEvent @event)
         {
             if (_root != null)
             {
@@ -66,7 +78,15 @@ namespace DontWaterMyBurrow.UI
             _root = _menuDocument.rootVisualElement.Q<VisualElement>();
             HideMenu();
 
-            var menuContainer = _root.Q<VisualElement>("building-menu-container");
+            var menuContainer = _root.Q<VisualElement>("building-menu-buttons");
+
+            if (menuContainer == null)
+            {
+                Debug.LogError("[BuildingMenuController] No building-menu-buttons found");
+                return;
+            }
+
+            menuContainer.Clear();
             _menuButtons = new();
 
             foreach (var structure in _structures)
@@ -76,29 +96,27 @@ namespace DontWaterMyBurrow.UI
                     text = structure.name,
                 };
                 button.AddToClassList("building-menu-button");
-                button.clicked += () => OnStructureButtonClicked(structure.Type);
-                _menuButtons[structure.Type] = button;
+                Action handler = () => OnStructureButtonClicked(structure);
+                button.clicked += handler;
+                _menuButtons.Add(new BuildingMenuInfo { Type = structure.Type, Button = button, Handle = handler });
                 menuContainer.Add(button);
             }
         }
 
         private void ClearMenuButtons()
         {
-            foreach (var buttonKvp in _menuButtons)
+            foreach (var buildingMenuInfo in _menuButtons)
             {
-                buttonKvp.Value.clicked -= () => OnStructureButtonClicked(buttonKvp.Key);
+                buildingMenuInfo.Button.clicked -= buildingMenuInfo.Handle;
             }
             _menuButtons.Clear();
         }
 
-        private void OnStructureButtonClicked(StructureType structure)
+        private void OnStructureButtonClicked(StructureDataSO structureSO)
         {
-            if (_debugMode) Debug.Log("[BuildingMenuController] Structure button clicked: " + structure);
+            if (_debugMode) Debug.Log("[BuildingMenuController] Structure button clicked: " + structureSO);
 
-            var dataSO = _structures.Find(x => x.Type == structure);
-            if (dataSO == null) return;
-
-            EventBus.Publish(new SelectStructureToBuildEvent(dataSO));
+            EventBus.Publish(new SelectStructureToBuildEvent(structureSO));
             HideMenu();
         }
 

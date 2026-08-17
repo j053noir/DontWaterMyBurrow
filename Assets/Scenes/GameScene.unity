@@ -2020,12 +2020,12 @@ MonoBehaviour:
   m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.UIDocument
-  m_PanelSettings: {fileID: 11400000, guid: d0e6e36f19d99554a973fa247d51679e, type: 2}
+  m_PanelSettings: {fileID: 11400000, guid: 77183dec1f703d34e96dd35550177e8f, type: 2}
   m_ParentUI: {fileID: 0}
   sourceAsset: {fileID: 9197481963319205126, guid: 997adf7e0ae0a654297af20359cf599b, type: 3}
   m_SortingOrder: 4
   m_Position: 0
-  m_WorldSpaceSizeMode: 1
+  m_WorldSpaceSizeMode: 0
   m_WorldSpaceWidth: 1920
   m_WorldSpaceHeight: 1080
   m_PivotReferenceSize: 0
