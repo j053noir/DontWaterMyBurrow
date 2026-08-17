@@ -1,0 +1,10 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements"
+    xmlns:uie="UnityEditor.UIElements"
+    editor-extension-mode="False">
+    <Style
+        src="project://database/Assets/UI/Styles/GlobalStyles.uss?fileID=7433441132597879392&amp;guid=764d243bde6e8a44397ad335cc4f8164&amp;type=3#GlobalStyles" />
+    <Style
+        src="project://database/Assets/UI/Styles/Building_Menu.uss?fileID=7433441132597879392&amp;guid=49d97ccbac0b48b4f89ee3f3ef83213d&amp;type=3#Building_Menu" />
+    <ui:VisualElement name="building-menu-container" class="building-menu-container">
+    </ui:VisualElement>
+</ui:UXML>

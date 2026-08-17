@@ -1,0 +1,29 @@
+.building-menu-container {
+    max-width: 320px;
+    background-color: transparent;
+    margin-top: 50px;
+    margin-bottom: 50px;
+    margin-left: 50px;
+    margin-right: 50px;
+    align-items: center;
+}
+
+.building-menu-button {
+    font-size: 24px;
+    -unity-font-style: bold;
+    background-color: rgba(255, 243, 164, 0.39);
+    border-top-width: 3px;
+    border-right-width: 3px;
+    border-bottom-width: 3px;
+    border-left-width: 3px;
+    border-top-left-radius: 25px;
+    border-top-right-radius: 25px;
+    border-bottom-right-radius: 25px;
+    border-bottom-left-radius: 25px;
+    border-left-color: rgb(255, 255, 255);
+    border-right-color: rgb(255, 255, 255);
+    border-top-color: rgb(255, 255, 255);
+    border-bottom-color: rgb(255, 255, 255);
+    cursor: url("project://database/Assets/Sprites/UI/Cursor.png?fileID=2800000&guid=79d5402db9c71b848a9ec023f8218562&type=3#Cursor");
+    color: rgb(33, 33, 33);
+}
