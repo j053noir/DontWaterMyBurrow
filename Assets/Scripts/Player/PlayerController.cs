@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using DontWaterMyBurrow.Core;
@@ -12,7 +11,7 @@ using DontWaterMyBurrow.Player.States;
 using DontWaterMyBurrow.Game.Events;
 using DontWaterMyBurrow.Game;
 using DontWaterMyBurrow.Data;
-using System;
+using DontWaterMyBurrow.UI.Events;
 
 namespace DontWaterMyBurrow.Player
 {
@@ -44,7 +43,8 @@ namespace DontWaterMyBurrow.Player
         public PlayerNormalState NormalState { get; private set; }
         public PlayerMudState MudState { get; private set; }
         public PlayerUncloggingState UncloggingState { get; private set; }
-        public PlayerBuildState BuildState { get; private set; }
+        public PlayerBuildMenuState BuildMenuState { get; private set; }
+        public PlayerPlacementState PlacementState { get; private set; }
 
         private void Awake()
         {
@@ -67,6 +67,9 @@ namespace DontWaterMyBurrow.Player
             EventBus.Subscribe<PlayerOnMudEvent>(OnPlayerOnMudEvent);
             EventBus.Subscribe<StructureBuiltEvent>(OnStructureBuilt);
             EventBus.Subscribe<BuildFailedEvent>(OnBuildFailed);
+            EventBus.Subscribe<SelectStructureToBuildEvent>(OnSelectStructureToBuildEvent);
+            EventBus.Subscribe<ClosedBuildMenuEvent>(OnClosedBuildMenuEvent);
+            EventBus.Subscribe<OutOfResourcesEvent>(OnOutOfResources);
         }
 
         private void OnDisable()
@@ -75,6 +78,9 @@ namespace DontWaterMyBurrow.Player
             EventBus.Unsubscribe<PlayerOnMudEvent>(OnPlayerOnMudEvent);
             EventBus.Unsubscribe<StructureBuiltEvent>(OnStructureBuilt);
             EventBus.Unsubscribe<BuildFailedEvent>(OnBuildFailed);
+            EventBus.Unsubscribe<SelectStructureToBuildEvent>(OnSelectStructureToBuildEvent);
+            EventBus.Unsubscribe<ClosedBuildMenuEvent>(OnClosedBuildMenuEvent);
+            EventBus.Unsubscribe<OutOfResourcesEvent>(OnOutOfResources);
         }
 
         private void Update()
@@ -124,7 +130,7 @@ namespace DontWaterMyBurrow.Player
 
         private void OnBuildFailed(BuildFailedEvent @event)
         {
-            if (StateMachine.CurrentState is PlayerBuildState buildState)
+            if (StateMachine.CurrentState is PlayerBuildMenuState buildState)
             {
                 StateMachine.ChangeState(buildState.PreviousState);
             }
@@ -132,9 +138,34 @@ namespace DontWaterMyBurrow.Player
 
         private void OnStructureBuilt(StructureBuiltEvent @event)
         {
-            if (StateMachine.CurrentState is PlayerBuildState buildState)
+            if (StateMachine.CurrentState is PlayerBuildMenuState buildState)
             {
                 StateMachine.ChangeState(buildState.PreviousState);
+            }
+        }
+
+        private void OnSelectStructureToBuildEvent(SelectStructureToBuildEvent @event)
+        {
+            if (StateMachine.CurrentState is PlayerBuildMenuState buildState)
+            {
+                PlacementState = new PlayerPlacementState(this, @event.StructureData, buildState.PreviousState);
+                StateMachine.ChangeState(PlacementState);
+            }
+        }
+
+        private void OnClosedBuildMenuEvent(ClosedBuildMenuEvent @event)
+        {
+            if (StateMachine.CurrentState is PlayerBuildMenuState buildState)
+            {
+                StateMachine.ChangeState(buildState.PreviousState);
+            }
+        }
+
+        private void OnOutOfResources(OutOfResourcesEvent @event)
+        {
+            if (StateMachine.CurrentState is PlayerPlacementState placementState && placementState.StructureData == @event.StructureData)
+            {
+                StateMachine.ChangeState(placementState.PreviousState);
             }
         }
 
@@ -202,10 +233,15 @@ namespace DontWaterMyBurrow.Player
         {
             if (!value.isPressed) return;
 
-            if (StateMachine.CurrentState is PlayerBuildState buildState)
+            if (StateMachine.CurrentState is PlayerBuildMenuState)
             {
+                return;
+            }
+            else if (StateMachine.CurrentState is PlayerPlacementState placementState)
+            {
+                if (!placementState.CanConfirmPlacement) return;
+
                 EventBus.Publish(new ConfirmBuildEvent(_targetCell));
-                StateMachine.ChangeState(buildState.PreviousState);
             }
             else
             {
@@ -261,19 +297,23 @@ namespace DontWaterMyBurrow.Player
 
         public void OnBuild(InputValue value)
         {
-            if (!value.isPressed || StateMachine.CurrentState is PlayerBuildState) return;
+            if (!value.isPressed || StateMachine.CurrentState is PlayerBuildMenuState) return;
 
-            BuildState = new PlayerBuildState(this, _targetCell, StateMachine.CurrentState);
-            StateMachine.ChangeState(BuildState);
+            BuildMenuState = new PlayerBuildMenuState(this, _targetCell, StateMachine.CurrentState);
+            StateMachine.ChangeState(BuildMenuState);
         }
 
         public void OnCancel(InputValue value)
         {
             if (!value.isPressed) return;
 
-            if (StateMachine.CurrentState is PlayerBuildState buildState)
+            if (StateMachine.CurrentState is PlayerBuildMenuState)
             {
-                StateMachine.ChangeState(buildState.PreviousState);
+                return;
+            }
+            else if (StateMachine.CurrentState is PlayerPlacementState placementState)
+            {
+                StateMachine.ChangeState(placementState.PreviousState);
             }
         }
 

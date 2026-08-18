@@ -5,13 +5,13 @@ using UnityEngine;
 
 namespace DontWaterMyBurrow.Player.States
 {
-    public class PlayerBuildState : IState
+    public class PlayerBuildMenuState : IState
     {
         private readonly PlayerController _player;
         private readonly Vector2Int _targetCell;
         public IState PreviousState;
 
-        public PlayerBuildState(PlayerController player, Vector2Int targetCell, IState previousState)
+        public PlayerBuildMenuState(PlayerController player, Vector2Int targetCell, IState previousState)
         {
             _player = player;
             _targetCell = targetCell;
