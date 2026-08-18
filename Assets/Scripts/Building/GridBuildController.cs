@@ -5,6 +5,7 @@ using DontWaterMyBurrow.Game;
 using DontWaterMyBurrow.Game.Events;
 using DontWaterMyBurrow.Player.Events;
 using DontWaterMyBurrow.Building.Events;
+using System;
 
 namespace DontWaterMyBurrow.Building
 {
@@ -33,6 +34,7 @@ namespace DontWaterMyBurrow.Building
             EventBus.Subscribe<PlayerBuildTargetChangedEvent>(OnPlayerBuildTargetChanged);
             EventBus.Subscribe<ConfirmBuildEvent>(OnConfirmBuild);
             EventBus.Subscribe<PlayerClosedBuildMenuEvent>(OnClosedBuildMenu);
+            EventBus.Subscribe<ClearStructureSelectionEvent>(OnClearStructureSelection);
         }
 
         private void OnDisable()
@@ -42,6 +44,7 @@ namespace DontWaterMyBurrow.Building
             EventBus.Unsubscribe<PlayerBuildTargetChangedEvent>(OnPlayerBuildTargetChanged);
             EventBus.Unsubscribe<ConfirmBuildEvent>(OnConfirmBuild);
             EventBus.Unsubscribe<PlayerClosedBuildMenuEvent>(OnClosedBuildMenu);
+            EventBus.Unsubscribe<ClearStructureSelectionEvent>(OnClearStructureSelection);
         }
 
         private void OnGameStateChanged(GameStateChangedEvent @event)
@@ -69,6 +72,12 @@ namespace DontWaterMyBurrow.Building
         }
 
         private void OnClosedBuildMenu(PlayerClosedBuildMenuEvent @event)
+        {
+            _selectedStructureSO = null;
+            if (_structurePreview != null) _structurePreview.enabled = false;
+        }
+
+        private void OnClearStructureSelection(ClearStructureSelectionEvent @event)
         {
             _selectedStructureSO = null;
             if (_structurePreview != null) _structurePreview.enabled = false;
@@ -102,8 +111,6 @@ namespace DontWaterMyBurrow.Building
 
         public void OnConfirmBuild(ConfirmBuildEvent @event)
         {
-            _structurePreview.enabled = false;
-
             if (!_canBuild || !_isValid || !_selectedStructureSO)
             {
                 EventBus.Publish(new BuildFailedEvent());
@@ -112,8 +119,10 @@ namespace DontWaterMyBurrow.Building
 
             _buildPosition = @event.Position;
             var structureGO = Instantiate(_selectedStructureSO.Prefab, _mapGridConfig.GridToWorld(_buildPosition), Quaternion.identity, _structureContainer);
-            EventBus.Publish(new StructureBuiltEvent(_selectedStructureSO.Type, _buildPosition, structureGO, _selectedStructureSO));
-            _selectedStructureSO = null;
+            var builtSO = _selectedStructureSO;
+            EventBus.Publish(new StructureBuiltEvent(builtSO.Type, _buildPosition, structureGO, builtSO));
+
+            ValidateBuildPosition(_buildPosition, _selectedStructureSO);
         }
     }
 }

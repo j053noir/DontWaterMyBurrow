@@ -17,7 +17,7 @@ MonoBehaviour:
   Type: 0
   Costs:
   - Type: 0
-    Cost: 2
+    Cost: 1
   - Type: 1
     Cost: 1
   MaxHealth: 60

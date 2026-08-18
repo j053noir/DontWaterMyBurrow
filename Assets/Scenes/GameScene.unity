@@ -2029,7 +2029,7 @@ MonoBehaviour:
   m_WorldSpaceWidth: 1920
   m_WorldSpaceHeight: 1080
   m_PivotReferenceSize: 0
-  m_Pivot: 0
+  m_Pivot: 6
   m_WorldSpaceCollider: {fileID: 0}
 --- !u!114 &2090560890
 MonoBehaviour:
@@ -2048,6 +2048,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 6a00813020cda834e872ebba6336657f, type: 2}
   - {fileID: 11400000, guid: 2ca244adb02974b418b1b5929f161635, type: 2}
   - {fileID: 11400000, guid: 7a549730fa4066c41a931645b01fed72, type: 2}
+  _onMoveAction: {fileID: -1680190386980627800, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+  _onInteractAction: {fileID: -2099379676528639254, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+  _onCancelAction: {fileID: 7040659881675835329, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   _menuDocument: {fileID: 2090560889}
   _debugMode: 1
 --- !u!1001 &1054372815037645336
