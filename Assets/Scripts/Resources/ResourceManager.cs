@@ -45,6 +45,11 @@ namespace DontWaterMyBurrow.Resources
         private void OnStructureBuilt(StructureBuiltEvent @event)
         {
             ConsumeResources(@event.StructureData);
+
+            if (!HasEnoughResources(@event.StructureData))
+            {
+                EventBus.Publish(new OutOfResourcesEvent(@event.StructureData));
+            }
         }
 
         private void OnResouceCollected(ResourceCollectedEvent @event)
