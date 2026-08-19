@@ -119,7 +119,7 @@ Transform:
   m_GameObject: {fileID: 6368773846490884927}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.5, y: 0.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -138,12 +138,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63e54265347356249af24990b5d31248, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DontWaterMyBurrow.Structures.StructureController
+  _mapGridConfig: {fileID: 11400000, guid: a627ba1f0afad054f998a3e9a4a03019, type: 2}
+  _structureData: {fileID: 11400000, guid: 7a549730fa4066c41a931645b01fed72, type: 2}
   _type: 0
-  _dataSO: {fileID: 11400000, guid: 7a549730fa4066c41a931645b01fed72, type: 2}
   _position: {x: 0, y: 0}
+  _hasBeenDamaged: 0
   _health: 100
   _maxHealth: 100
-  _hasBeenDamaged: 0
 --- !u!50 &9209908942080271303
 Rigidbody2D:
   serializedVersion: 5

@@ -51,7 +51,7 @@ namespace DontWaterMyBurrow.Building
                 {
                     var tile = new GameObject($"Tile_{x}_{y}");
                     tile.transform.SetParent(_gridParent);
-                    tile.transform.position = new Vector3(x * _mapGridConfig.TileSize, y * _mapGridConfig.TileSize, 0);
+                    tile.transform.position = _mapGridConfig.GridToWorld(new Vector2Int(x, y));
 
                     if (_tileSprite != null)
                     {

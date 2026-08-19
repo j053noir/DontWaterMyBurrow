@@ -12,17 +12,21 @@ PrefabInstance:
       propertyPath: _type
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 476177655026077746, guid: dfdc0b64d0c2fc34d966d1c3936fb6a6, type: 3}
+      propertyPath: _structureData
+      value: 
+      objectReference: {fileID: 11400000, guid: 2ca244adb02974b418b1b5929f161635, type: 2}
     - target: {fileID: 6368773846490884927, guid: dfdc0b64d0c2fc34d966d1c3936fb6a6, type: 3}
       propertyPath: m_Name
       value: Water Pump
       objectReference: {fileID: 0}
     - target: {fileID: 6471501148456113234, guid: dfdc0b64d0c2fc34d966d1c3936fb6a6, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 6471501148456113234, guid: dfdc0b64d0c2fc34d966d1c3936fb6a6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 6471501148456113234, guid: dfdc0b64d0c2fc34d966d1c3936fb6a6, type: 3}
       propertyPath: m_LocalPosition.z

@@ -67,7 +67,7 @@ namespace DontWaterMyBurrow.Water
             {
                 var waterObject = new GameObject($"Water_{key.x}_{key.y}");
                 waterObject.transform.parent = transform;
-                waterObject.transform.position = new Vector3(key.x * _mapGridConfig.TileSize, key.y * _mapGridConfig.TileSize, 0);
+                waterObject.transform.position = _mapGridConfig.GridToWorld(key);
 
                 if (_waterSprite != null)
                 {
