@@ -24,7 +24,10 @@ namespace DontWaterMyBurrow.UI
     {
         [Header("Config")]
         [SerializeField] private MapGridConfigSO _mapGridConfig;
+        [SerializeField] private TransformAnchorSO _playerTransformAnchor;
         [SerializeField] private List<StructureDataSO> _structures;
+
+        [Header("Input Actions")]
         [SerializeField] private InputActionReference _onMoveAction;
         [SerializeField] private InputActionReference _onInteractAction;
         [SerializeField] private InputActionReference _onCancelAction;
@@ -36,6 +39,7 @@ namespace DontWaterMyBurrow.UI
 
         private int _selectedIndex = 0;
         private float _nextAllowedTime;
+        private bool _isMenuOpen = false;
 
         [Header("Debug")]
         [SerializeField] private bool _debugMode = false;
@@ -43,6 +47,9 @@ namespace DontWaterMyBurrow.UI
         private void Awake()
         {
             _menuButtons = new();
+
+            if (_mapGridConfig == null) Debug.LogError("[BuildingMenuController] MapGridConfigSO is null");
+            if (_playerTransformAnchor == null) Debug.LogError("[BuildingMenuController] PlayerTransformAnchorSO is null");
 
             InitializeUI();
         }
@@ -59,6 +66,47 @@ namespace DontWaterMyBurrow.UI
             EventBus.Unsubscribe<PlayerClosedBuildMenuEvent>(OnPlayerClosedBuildMenuEvent);
         }
 
+        private void LateUpdate()
+        {
+            // Guard clauses
+            if (!_isMenuOpen || _mapGridConfig == null ||
+                _playerTransformAnchor == null || !_playerTransformAnchor.IsSet) return;
+
+            // 1. Obtener tamaño dinámico del menú en unidades de mundo
+            var ppu = (_menuDocument != null && _menuDocument.panelSettings != null)
+                ? _menuDocument.panelSettings.referenceSpritePixelsPerUnit
+                : 100f;
+            if (ppu <= 0) ppu = 100f;
+
+            var visualElement = _root.Q<VisualElement>("building-menu-container") ?? _root;
+            var widthInWorld = (visualElement.layout.width > 0 ? visualElement.layout.width : visualElement.worldBound.width) / ppu;
+            var heightInWorld = (visualElement.layout.height > 0 ? visualElement.layout.height : visualElement.worldBound.height) / ppu;
+
+            var halfWidthInWorld = widthInWorld * 0.5f;
+            var playerPos = _playerTransformAnchor.Transform.position;
+            var tileSize = _mapGridConfig.TileSize;
+
+            // 2. Clampear X usando el helper del MapGridConfigSO
+            var posX = _mapGridConfig.ClampWorldX(playerPos.x, halfWidthInWorld);
+
+            // 3. Calcular Y con Pivot BottomCenter:
+            // Despejamos las orejas del conejo con un gap de 1.1 tiles
+            var gap = tileSize * 1.5f;
+            var targetPosY = playerPos.y + gap;
+
+            if (targetPosY + heightInWorld > _mapGridConfig.MaxWorldY)
+            {
+                // Si sobrepasa el techo, se posiciona por debajo de los pies (-0.5 tiles - altura del menú)
+                targetPosY = playerPos.y - (tileSize * 0.5f) - heightInWorld;
+            }
+
+            // Clampear Y inferior
+            var posY = Mathf.Max(targetPosY, _mapGridConfig.MinWorldY);
+
+            // 4. Asignar posición con Z = -1f para renderizar delante de los sprites
+            transform.position = new Vector3(posX, posY, -1f);
+        }
+
         private void OnDestroy()
         {
             UnsubscribeInputActions();
@@ -70,6 +118,7 @@ namespace DontWaterMyBurrow.UI
             if (_root != null)
             {
                 _root.style.display = DisplayStyle.Flex;
+                _isMenuOpen = true;
                 if (_mapGridConfig != null)
                 {
                     var menuPosition = _mapGridConfig.GridToWorld(@event.TargetCell);
@@ -189,6 +238,7 @@ namespace DontWaterMyBurrow.UI
 
         private void HideMenu()
         {
+            _isMenuOpen = false;
             if (_root != null) _root.style.display = DisplayStyle.None;
 
             if (_menuButtons != null && _menuButtons.Count > 0 && _selectedIndex >= 0 && _selectedIndex < _menuButtons.Count)

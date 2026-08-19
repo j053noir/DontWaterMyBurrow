@@ -2029,7 +2029,7 @@ MonoBehaviour:
   m_WorldSpaceWidth: 1920
   m_WorldSpaceHeight: 1080
   m_PivotReferenceSize: 0
-  m_Pivot: 6
+  m_Pivot: 7
   m_WorldSpaceCollider: {fileID: 0}
 --- !u!114 &2090560890
 MonoBehaviour:
@@ -2044,6 +2044,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DontWaterMyBurrow.UI.BuildingMenuController
   _mapGridConfig: {fileID: 11400000, guid: a627ba1f0afad054f998a3e9a4a03019, type: 2}
+  _playerTransformAnchor: {fileID: 11400000, guid: 2266ac3c54e5dc444b050ff608d1055a, type: 2}
   _structures:
   - {fileID: 11400000, guid: 6a00813020cda834e872ebba6336657f, type: 2}
   - {fileID: 11400000, guid: 2ca244adb02974b418b1b5929f161635, type: 2}
@@ -2202,6 +2203,10 @@ PrefabInstance:
       propertyPath: _mapGridConfig
       value: 
       objectReference: {fileID: 11400000, guid: a627ba1f0afad054f998a3e9a4a03019, type: 2}
+    - target: {fileID: 6905761386865936225, guid: 622435d3f37416e45b3f58d7ad9824e8, type: 3}
+      propertyPath: _playerTransformAnchor
+      value: 
+      objectReference: {fileID: 11400000, guid: 2266ac3c54e5dc444b050ff608d1055a, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
