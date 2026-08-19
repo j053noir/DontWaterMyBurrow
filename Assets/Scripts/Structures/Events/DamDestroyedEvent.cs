@@ -4,12 +4,12 @@ namespace DontWaterMyBurrow.Structures.Events
 {
     public readonly struct DamDestroyedEvent
     {
-        public readonly Vector2Int Position;
+        public readonly Vector2Int[] OccupiedCells;
         public readonly GameObject Instance;
 
-        public DamDestroyedEvent(Vector2Int position, GameObject instance)
+        public DamDestroyedEvent(Vector2Int[] occupiedCells, GameObject instance)
         {
-            Position = position;
+            OccupiedCells = occupiedCells;
             Instance = instance;
         }
     }

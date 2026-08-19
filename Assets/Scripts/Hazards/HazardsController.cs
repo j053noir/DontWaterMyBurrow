@@ -140,6 +140,10 @@ namespace DontWaterMyBurrow.Hazards
                 return;
             }
 
+            transform.SetPositionAndRotation(
+                _mapGridConfig.GridToWorld(transform.position),
+                _mapGridConfig.SnapToGridRotation(transform.rotation)
+            );
             _rigidbody2D.bodyType = RigidbodyType2D.Static;
             _collider2D.isTrigger = true;
 

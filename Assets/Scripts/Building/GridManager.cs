@@ -58,12 +58,19 @@ namespace DontWaterMyBurrow.Building
         private void OnDamCreated(DamCreatedEvent @event)
         {
             var gridObject = new GridObject(@event.Instance, GridCellType.Dam);
-            _worldGridData.SetCell(@event.Position, gridObject);
+
+            foreach (var position in @event.OccupiedCells)
+            {
+                _worldGridData.SetCell(position, gridObject);
+            }
         }
 
         private void OnDamDestroyed(DamDestroyedEvent @event)
         {
-            _worldGridData.RemoveCell(@event.Position);
+            foreach (var position in @event.OccupiedCells)
+            {
+                _worldGridData.RemoveCell(position);
+            }
         }
 
         private void OnGameStateChanged(GameStateChangedEvent @event)
