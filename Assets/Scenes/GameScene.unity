@@ -1147,6 +1147,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DontWaterMyBurrow.Water.WaterManager
   _mapGridConfig: {fileID: 11400000, guid: a627ba1f0afad054f998a3e9a4a03019, type: 2}
+  _worldGridData: {fileID: 11400000, guid: efdf2c53b4f48a3458ea088a688ae5b5, type: 2}
   _waterFlowVectors: []
   _waterLeekingPositions:
   - {x: -7, y: -8}
@@ -1634,6 +1635,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DontWaterMyBurrow.Building.GridManager
   _mapGridConfig: {fileID: 11400000, guid: a627ba1f0afad054f998a3e9a4a03019, type: 2}
+  _worldGridData: {fileID: 11400000, guid: efdf2c53b4f48a3458ea088a688ae5b5, type: 2}
 --- !u!4 &1504269843
 Transform:
   m_ObjectHideFlags: 0
@@ -2127,37 +2129,9 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1707021323}
     m_Modifications:
-    - target: {fileID: 1216239987589212627, guid: 622435d3f37416e45b3f58d7ad9824e8, type: 3}
-      propertyPath: m_Size.x
-      value: 1.28
-      objectReference: {fileID: 0}
-    - target: {fileID: 1216239987589212627, guid: 622435d3f37416e45b3f58d7ad9824e8, type: 3}
-      propertyPath: m_Size.y
-      value: 1.28
-      objectReference: {fileID: 0}
-    - target: {fileID: 1216239987589212627, guid: 622435d3f37416e45b3f58d7ad9824e8, type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: 1fcd6192f62d2914284a7ce91281ed97, type: 3}
-    - target: {fileID: 1216239987589212627, guid: 622435d3f37416e45b3f58d7ad9824e8, type: 3}
-      propertyPath: m_SortingOrder
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 1216239987589212627, guid: 622435d3f37416e45b3f58d7ad9824e8, type: 3}
-      propertyPath: m_WasSpriteAssigned
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 1372484701566004862, guid: 622435d3f37416e45b3f58d7ad9824e8, type: 3}
       propertyPath: m_Name
       value: Player
-      objectReference: {fileID: 0}
-    - target: {fileID: 1372484701566004862, guid: 622435d3f37416e45b3f58d7ad9824e8, type: 3}
-      propertyPath: m_TagString
-      value: Player
-      objectReference: {fileID: 0}
-    - target: {fileID: 3652447336418037129, guid: 622435d3f37416e45b3f58d7ad9824e8, type: 3}
-      propertyPath: m_Constraints
-      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 5777208243858201819, guid: 622435d3f37416e45b3f58d7ad9824e8, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2199,14 +2173,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6905761386865936225, guid: 622435d3f37416e45b3f58d7ad9824e8, type: 3}
-      propertyPath: _mapGridConfig
-      value: 
-      objectReference: {fileID: 11400000, guid: a627ba1f0afad054f998a3e9a4a03019, type: 2}
-    - target: {fileID: 6905761386865936225, guid: 622435d3f37416e45b3f58d7ad9824e8, type: 3}
-      propertyPath: _playerTransformAnchor
-      value: 
-      objectReference: {fileID: 11400000, guid: 2266ac3c54e5dc444b050ff608d1055a, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

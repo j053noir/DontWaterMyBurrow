@@ -15,6 +15,7 @@ namespace DontWaterMyBurrow.Water
     {
         [Header("Config")]
         [SerializeField] private MapGridConfigSO _mapGridConfig;
+        [SerializeField] private WorldGridDataSO _worldGridData;
 
         [Header("Water Grid")]
         [SerializeField] private Dictionary<Vector2Int, float> _waterGrid;
@@ -32,7 +33,6 @@ namespace DontWaterMyBurrow.Water
         [SerializeField] private bool _debugMode;
 
         private bool _isSimulatingWater = false;
-        private HashSet<Vector2Int> _occupiedCells;
         private float _generationTimer = 0.0f;
 
         private void Awake()
@@ -41,7 +41,6 @@ namespace DontWaterMyBurrow.Water
             _waterLeekingPositions = new();
             _channelDirections = new();
             _drainCells = new();
-            _occupiedCells = new();
             _waterFlowVectors = new()
             {
                 Vector2Int.up,
@@ -53,6 +52,9 @@ namespace DontWaterMyBurrow.Water
                 Vector2Int.down + Vector2Int.left,
                 Vector2Int.down + Vector2Int.right,
             };
+
+            if (_mapGridConfig == null) Debug.LogError("[WaterManager] MapGridConfigSO is null");
+            if (_worldGridData == null) Debug.LogError("[WaterManager] WorldGridDataSO is null");
         }
 
         private void OnEnable()
@@ -237,7 +239,7 @@ namespace DontWaterMyBurrow.Water
             foreach (var flowVector in _waterFlowVectors)
             {
                 var nextPosition = position + flowVector;
-                if (!IsCellOccupied(nextPosition) && _mapGridConfig.IsWithinBounds(nextPosition))
+                if (_worldGridData.IsFloodable(nextPosition) && _mapGridConfig.IsWithinBounds(nextPosition))
                 {
                     availableCells.Add(flowVector);
                 }
@@ -247,7 +249,7 @@ namespace DontWaterMyBurrow.Water
 
         private bool MoveWater(Vector2Int fromPosition, Vector2Int toPosition, float pressure)
         {
-            if (!IsCellOccupied(toPosition))
+            if (_worldGridData.IsFloodable(toPosition))
             {
                 _waterGrid.TryGetValue(toPosition, out float currentToLevel);
                 _waterGrid[toPosition] = Mathf.Clamp(currentToLevel + pressure, 0f, 1f);
@@ -283,7 +285,7 @@ namespace DontWaterMyBurrow.Water
 
             foreach (var position in _waterLeekingPositions)
             {
-                if (!IsCellOccupied(position))
+                if (_worldGridData.IsFloodable(position))
                 {
                     _waterGrid.TryGetValue(position, out float currentLevel);
                     // Increase water level, but don't exceed 100%
@@ -336,11 +338,6 @@ namespace DontWaterMyBurrow.Water
             if (leakPosition.y >= _mapGridConfig.MaxYBoundary) dir.y -= 1;
 
             return dir;
-        }
-
-        public bool IsCellOccupied(Vector2Int position)
-        {
-            return _occupiedCells.Contains(position);
         }
 
         public bool IsCellFlooded(Vector2Int gridPosition)
