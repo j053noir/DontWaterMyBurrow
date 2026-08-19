@@ -22,6 +22,7 @@ namespace DontWaterMyBurrow.Player
     {
         [Header("Config")]
         [SerializeField] private MapGridConfigSO _mapGridConfig;
+        [SerializeField] private TransformAnchorSO _playerTransformAnchor;
 
         [Header("Movement")]
         [SerializeField] private float _baseMoveSpeed = 5f;
@@ -54,6 +55,9 @@ namespace DontWaterMyBurrow.Player
             MudState = new PlayerMudState(this, _baseMoveSpeed * 0.5f);
 
             _rigidBody2d = GetComponent<Rigidbody2D>();
+
+            if (_mapGridConfig == null) Debug.LogError("[PlayerController] MapGridConfigSO is null");
+            if (_playerTransformAnchor == null) Debug.LogError("[PlayerController] PlayerTransformAnchorSO is null");
         }
 
         private void Start()
@@ -70,6 +74,8 @@ namespace DontWaterMyBurrow.Player
             EventBus.Subscribe<SelectStructureToBuildEvent>(OnSelectStructureToBuildEvent);
             EventBus.Subscribe<ClosedBuildMenuEvent>(OnClosedBuildMenuEvent);
             EventBus.Subscribe<OutOfResourcesEvent>(OnOutOfResources);
+
+            _playerTransformAnchor.Transform = transform;
         }
 
         private void OnDisable()
@@ -81,6 +87,8 @@ namespace DontWaterMyBurrow.Player
             EventBus.Unsubscribe<SelectStructureToBuildEvent>(OnSelectStructureToBuildEvent);
             EventBus.Unsubscribe<ClosedBuildMenuEvent>(OnClosedBuildMenuEvent);
             EventBus.Unsubscribe<OutOfResourcesEvent>(OnOutOfResources);
+
+            _playerTransformAnchor.Transform = null;
         }
 
         private void Update()
