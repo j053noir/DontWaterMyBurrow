@@ -849,7 +849,7 @@ BoxCollider2D:
   m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
+    pivot: {x: 0.5, y: 0.5}
     oldSize: {x: 1, y: 1}
     newSize: {x: 1.28, y: 1.28}
     adaptiveTilingThreshold: 0.5
@@ -1463,6 +1463,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e75af75805cecd4f894c4633e5b45a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DontWaterMyBurrow.Resources.ResourceSpawner
+  _mapGridConfig: {fileID: 11400000, guid: a627ba1f0afad054f998a3e9a4a03019, type: 2}
+  _worldGridData: {fileID: 11400000, guid: efdf2c53b4f48a3458ea088a688ae5b5, type: 2}
   _spawnConfigs:
   - resourceType: 0
     maxResources: 5
@@ -1474,7 +1476,6 @@ MonoBehaviour:
     maxResources: 5
     resourcePrefab: {fileID: 4231461154664559315, guid: da794fbd0c4bc164190f660e5ae2e3cd, type: 3}
   _resourcesParent: {fileID: 9653317}
-  _mapGridConfig: {fileID: 11400000, guid: a627ba1f0afad054f998a3e9a4a03019, type: 2}
   _debugMode: 0
 --- !u!1 &1258997697
 GameObject:
@@ -2172,6 +2173,14 @@ PrefabInstance:
     - target: {fileID: 5777208243858201819, guid: 622435d3f37416e45b3f58d7ad9824e8, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6905761386865936225, guid: 622435d3f37416e45b3f58d7ad9824e8, type: 3}
+      propertyPath: _baseMoveSpeed
+      value: 7.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6905761386865936225, guid: 622435d3f37416e45b3f58d7ad9824e8, type: 3}
+      propertyPath: _currentMoveSpeed
+      value: 7.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

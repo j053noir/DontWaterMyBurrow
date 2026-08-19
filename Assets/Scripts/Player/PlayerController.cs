@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using DontWaterMyBurrow.Building.Events;
 using DontWaterMyBurrow.Core;
 using DontWaterMyBurrow.Data;
@@ -32,8 +31,8 @@ namespace DontWaterMyBurrow.Player
         [SerializeField] private Vector2Int _facingDirection = Vector2Int.down;
 
         [Header("Movement Speed")]
-        [SerializeField] private float _baseMoveSpeed = 5f;
-        [SerializeField] private float _currentMoveSpeed = 5f;
+        [SerializeField] private float _baseMoveSpeed = 7.5f;
+        [SerializeField] private float _currentMoveSpeed = 7.5f;
 
         [Header("Actions")]
         [SerializeField] private float _interactionDistance = 1f;
@@ -44,6 +43,7 @@ namespace DontWaterMyBurrow.Player
         public bool DebugMode => _debugMode;
 
         private Vector2Int _moveDirection;
+        private Vector2Int _nextMoveDirection;
         private Vector2Int _targetCell;
         private bool _isMoving;
 
@@ -108,12 +108,12 @@ namespace DontWaterMyBurrow.Player
 
         private void Update()
         {
+            PlayerMove();
             StateMachine.Update();
         }
 
         private void FixedUpdate()
         {
-            PlayerMove();
             StateMachine.FixedUpdate();
         }
 
@@ -203,16 +203,34 @@ namespace DontWaterMyBurrow.Player
             if (_isMoving)
             {
                 var targetWorldPosition = _mapGridConfig.GridToWorld(_targetCell);
-                var step = _currentMoveSpeed * Time.fixedDeltaTime;
+                var step = _currentMoveSpeed * Time.deltaTime;
 
-                var nextPos = Vector2.MoveTowards(_rigidBody2d.position, targetWorldPosition, step);
-                _rigidBody2d.MovePosition(nextPos);
+                var nextPos = Vector2.MoveTowards(transform.position, targetWorldPosition, step);
+                transform.position = new Vector3(nextPos.x, nextPos.y, transform.position.z);
 
-                if (Vector2.Distance(_rigidBody2d.position, targetWorldPosition) <= 0.001f || Vector2.Distance(nextPos, targetWorldPosition) <= 0.001f)
+                // Verificamos si llegamos o si el paso actual alcanza exactamente el destino
+                if (Vector2.Distance(transform.position, targetWorldPosition) <= 0.001f)
                 {
-                    _rigidBody2d.position = targetWorldPosition;
+                    transform.position = targetWorldPosition;
                     _currentCell = _targetCell;
-                    _isMoving = false;
+
+                    // Encadenamiento inmediato: evaluamos el buffer sin frenar a 0
+                    var chosenDirection = (_nextMoveDirection != Vector2Int.zero) ? _nextMoveDirection : _moveDirection;
+                    var nextDesiredCell = _currentCell + chosenDirection;
+
+                    if (chosenDirection != Vector2Int.zero &&
+                        _mapGridConfig.IsWithinBounds(nextDesiredCell) &&
+                        _worldGridData.IsWalkable(nextDesiredCell))
+                    {
+                        _targetCell = nextDesiredCell;
+                        _facingDirection = chosenDirection;
+                        _isMoving = true;
+                    }
+                    else
+                    {
+                        _isMoving = false;
+                        _nextMoveDirection = Vector2Int.zero;
+                    }
 
                     var newTargetCell = CursorCell();
                     if (_cursorCell != newTargetCell)
@@ -254,10 +272,12 @@ namespace DontWaterMyBurrow.Player
             else
             {
                 _moveDirection = Vector2Int.zero;
+                _nextMoveDirection = Vector2Int.zero;
             }
 
             if (_moveDirection != Vector2Int.zero)
             {
+                _nextMoveDirection = _moveDirection;
                 _facingDirection = _moveDirection;
 
                 var targetCell = CursorCell();
@@ -265,7 +285,7 @@ namespace DontWaterMyBurrow.Player
                 if (_cursorCell != targetCell)
                 {
                     _cursorCell = targetCell;
-                    EventBus.Publish(new PlayerBuildTargetChangedEvent(targetCell));
+                    EventBus.Publish(new PlayerBuildTargetChangedEvent(_cursorCell));
                 }
             }
         }
@@ -303,7 +323,7 @@ namespace DontWaterMyBurrow.Player
                 {
                     if (structure.IsDamaged)
                     {
-                        EventBus.Publish(new RepairStructureRequestEvent(structure.Position, structure.DataSO, (success) =>
+                        EventBus.Publish(new RepairStructureRequestEvent(structure.Position, structure.StructureData, (success) =>
                         {
                             if (success) structure.Repair(_repairAmount);
                             else if (_debugMode) Debug.LogWarning("Can't repair. Player doesn't have enough resources.");

@@ -1,11 +1,9 @@
 using System.Collections.Generic;
-using DontWaterMyBurrow.Building.Events;
 using DontWaterMyBurrow.Core;
 using DontWaterMyBurrow.Data;
 using DontWaterMyBurrow.Game;
 using DontWaterMyBurrow.Game.Events;
 using DontWaterMyBurrow.Resources.Events;
-using DontWaterMyBurrow.Structures.Events;
 using UnityEngine;
 
 namespace DontWaterMyBurrow.Resources
@@ -21,18 +19,18 @@ namespace DontWaterMyBurrow.Resources
     public class ResourceSpawner : MonoBehaviour
     {
         [Header("Config")]
+        [SerializeField] private MapGridConfigSO _mapGridConfig;
+        [SerializeField] private WorldGridDataSO _worldGridData;
+
+        [Header("Parameters")]
         [SerializeField] private List<SpawnConfig> _spawnConfigs;
         [SerializeField] private Transform _resourcesParent;
-        [SerializeField] private MapGridConfigSO _mapGridConfig;
 
         [Header("Debug")]
         [SerializeField] private bool _debugMode = false;
 
-        private HashSet<Vector2Int> _occupiedCells;
-
         private void Awake()
         {
-            _occupiedCells = new();
             if (_resourcesParent == null) _resourcesParent = transform;
         }
 
@@ -40,12 +38,6 @@ namespace DontWaterMyBurrow.Resources
         private void OnEnable()
         {
             EventBus.Subscribe<GameStateChangedEvent>(OnGameStateChanged);
-            EventBus.Subscribe<StructureBuiltEvent>(OnStructureBuilt);
-            EventBus.Subscribe<StructureDestroyedEvent>(OnStructureDestroyed);
-            EventBus.Subscribe<ResourceSpawnedEvent>(OnResourceSpawned);
-            EventBus.Subscribe<ResourceCollectedEvent>(OnResourceCollected);
-            EventBus.Subscribe<DamCreatedEvent>(OnDamCreated);
-            EventBus.Subscribe<DamDestroyedEvent>(OnDamDestroyed);
 
             EventBus.Publish(new RegisterManagerEvent(this.GetType()));
         }
@@ -53,12 +45,6 @@ namespace DontWaterMyBurrow.Resources
         private void OnDisable()
         {
             EventBus.Unsubscribe<GameStateChangedEvent>(OnGameStateChanged);
-            EventBus.Unsubscribe<StructureBuiltEvent>(OnStructureBuilt);
-            EventBus.Unsubscribe<StructureDestroyedEvent>(OnStructureDestroyed);
-            EventBus.Unsubscribe<ResourceSpawnedEvent>(OnResourceSpawned);
-            EventBus.Unsubscribe<ResourceCollectedEvent>(OnResourceCollected);
-            EventBus.Unsubscribe<DamCreatedEvent>(OnDamCreated);
-            EventBus.Unsubscribe<DamDestroyedEvent>(OnDamDestroyed);
 
             EventBus.Publish(new UnregisterManagerEvent(this.GetType()));
         }
@@ -80,39 +66,7 @@ namespace DontWaterMyBurrow.Resources
 
         private void ClearResources()
         {
-            _occupiedCells.Clear();
-
             EventBus.Publish(new ManagerReadyEvent(this.GetType()));
-        }
-
-        private void OnStructureBuilt(StructureBuiltEvent @event)
-        {
-            _occupiedCells.Add(@event.Position);
-        }
-
-        private void OnStructureDestroyed(StructureDestroyedEvent @event)
-        {
-            _occupiedCells.Remove(@event.Position);
-        }
-
-        private void OnResourceSpawned(ResourceSpawnedEvent @event)
-        {
-            _occupiedCells.Add(@event.Position);
-        }
-
-        private void OnResourceCollected(ResourceCollectedEvent @event)
-        {
-            _occupiedCells.Remove(@event.Position);
-        }
-
-        private void OnDamCreated(DamCreatedEvent @event)
-        {
-            _occupiedCells.Add(@event.Position);
-        }
-
-        private void OnDamDestroyed(DamDestroyedEvent @event)
-        {
-            _occupiedCells.Remove(@event.Position);
         }
 
         private void SpawnResource(SpawnConfig spawnConfig)
@@ -139,7 +93,7 @@ namespace DontWaterMyBurrow.Resources
 
             int attempts = 0;
             int maxAttempts = 100;
-            while (_occupiedCells.Contains(randomPosition) && attempts < maxAttempts)
+            while (_worldGridData.IsCellOccupied(randomPosition) && attempts < maxAttempts)
             {
                 attempts++;
                 // Keep generating random positions until an empty cell is found
