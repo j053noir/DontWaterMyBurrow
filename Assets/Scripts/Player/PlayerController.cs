@@ -28,7 +28,7 @@ namespace DontWaterMyBurrow.Player
 
         [Header("Movement")]
         [SerializeField] private Vector2Int _currentCell;
-        [SerializeField] private Vector2Int _targetCell;
+        [SerializeField] private Vector2Int _cursorCell;
         [SerializeField] private Vector2Int _facingDirection = Vector2Int.down;
 
         [Header("Movement Speed")]
@@ -44,6 +44,7 @@ namespace DontWaterMyBurrow.Player
         public bool DebugMode => _debugMode;
 
         private Vector2Int _moveDirection;
+        private Vector2Int _targetCell;
         private bool _isMoving;
 
         private Rigidbody2D _rigidBody2d;
@@ -202,16 +203,23 @@ namespace DontWaterMyBurrow.Player
             if (_isMoving)
             {
                 var targetWorldPosition = _mapGridConfig.GridToWorld(_targetCell);
+                var step = _currentMoveSpeed * Time.fixedDeltaTime;
 
-                var nextPos = Vector2.MoveTowards(_rigidBody2d.position, targetWorldPosition, _currentMoveSpeed * Time.fixedDeltaTime);
+                var nextPos = Vector2.MoveTowards(_rigidBody2d.position, targetWorldPosition, step);
                 _rigidBody2d.MovePosition(nextPos);
 
-                if (Vector2.Distance(targetWorldPosition, _rigidBody2d.position) < 0.001f)
+                if (Vector2.Distance(_rigidBody2d.position, targetWorldPosition) <= 0.001f || Vector2.Distance(nextPos, targetWorldPosition) <= 0.001f)
                 {
                     _rigidBody2d.position = targetWorldPosition;
                     _currentCell = _targetCell;
                     _isMoving = false;
-                    _targetCell = _currentCell + _facingDirection;
+
+                    var newTargetCell = CursorCell();
+                    if (_cursorCell != newTargetCell)
+                    {
+                        _cursorCell = newTargetCell;
+                        EventBus.Publish(new PlayerBuildTargetChangedEvent(_cursorCell));
+                    }
                 }
             }
             else if (_moveDirection != Vector2Int.zero)
@@ -222,21 +230,15 @@ namespace DontWaterMyBurrow.Player
                     _targetCell = desiredCell;
                     _isMoving = true;
                 }
-                else
-                {
-                    _isMoving = false;
-                }
             }
         }
 
-        private Vector2Int TargetCell()
+        private Vector2Int CursorCell()
         {
-            var currentCell = new Vector2Int(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y));
-
-            return currentCell + _moveDirection;
+            return _currentCell + _facingDirection;
         }
 
-        # region Input Actions
+        #region Input Actions
         public void OnMove(InputValue value)
         {
             var rawInput = value.Get<Vector2>();
@@ -258,11 +260,11 @@ namespace DontWaterMyBurrow.Player
             {
                 _facingDirection = _moveDirection;
 
-                var targetCell = this.TargetCell();
+                var targetCell = CursorCell();
 
-                if (_targetCell != targetCell)
+                if (_cursorCell != targetCell)
                 {
-                    _targetCell = targetCell;
+                    _cursorCell = targetCell;
                     EventBus.Publish(new PlayerBuildTargetChangedEvent(targetCell));
                 }
             }
@@ -280,7 +282,7 @@ namespace DontWaterMyBurrow.Player
             {
                 if (!placementState.CanConfirmPlacement) return;
 
-                EventBus.Publish(new ConfirmBuildEvent(_targetCell));
+                EventBus.Publish(new ConfirmBuildEvent(_cursorCell));
             }
             else
             {
@@ -327,7 +329,7 @@ namespace DontWaterMyBurrow.Player
                 }
                 else if (hit.gameObject.TryGetComponent(out ResourceNodeController resourceNode))
                 {
-                    EventBus.Publish(new ResourceCollectedEvent(_targetCell, resourceNode.Type, resourceNode.Amount));
+                    EventBus.Publish(new ResourceCollectedEvent(_cursorCell, resourceNode.Type, resourceNode.Amount));
 
                     // TODO: Return to pool
                     resourceNode.gameObject.SetActive(false);
@@ -339,7 +341,7 @@ namespace DontWaterMyBurrow.Player
         {
             if (!value.isPressed || StateMachine.CurrentState is PlayerBuildMenuState) return;
 
-            BuildMenuState = new PlayerBuildMenuState(this, _targetCell, StateMachine.CurrentState);
+            BuildMenuState = new PlayerBuildMenuState(this, _cursorCell, StateMachine.CurrentState);
             StateMachine.ChangeState(BuildMenuState);
         }
 
