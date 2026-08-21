@@ -216,17 +216,8 @@ namespace DontWaterMyBurrow.Player
 
                     // Encadenamiento inmediato: evaluamos el buffer sin frenar a 0
                     var chosenDirection = (_nextMoveDirection != Vector2Int.zero) ? _nextMoveDirection : _moveDirection;
-                    var nextDesiredCell = _currentCell + chosenDirection;
 
-                    if (chosenDirection != Vector2Int.zero &&
-                        _mapGridConfig.IsWithinBounds(nextDesiredCell) &&
-                        _worldGridData.IsWalkable(nextDesiredCell))
-                    {
-                        _targetCell = nextDesiredCell;
-                        _facingDirection = chosenDirection;
-                        _isMoving = true;
-                    }
-                    else
+                    if (!TryMoveOrPush(chosenDirection))
                     {
                         _isMoving = false;
                         _nextMoveDirection = Vector2Int.zero;
@@ -242,13 +233,64 @@ namespace DontWaterMyBurrow.Player
             }
             else if (_moveDirection != Vector2Int.zero)
             {
-                var desiredCell = _currentCell + _moveDirection;
-                if (_mapGridConfig.IsWithinBounds(desiredCell) && _worldGridData.IsWalkable(desiredCell))
+                // Inicio de movimiento o empuje desde reposo
+                TryMoveOrPush(_moveDirection);
+            }
+        }
+
+        /// <summary>
+        /// Evalua si el jugador puede caminar o empujar una estructura en la direccion indicada.
+        /// Si la accion es valida, inicia el movimiento coordinado y actualiza la grilla.
+        /// </summary>
+        /// <param name="direction">Direccion en coordenadas de grilla (arriba, abajo, izq, der)</param>
+        /// <returns>True si se inicio un paso o empuje; False si el camino esta bloqueado.</returns>
+        private bool TryMoveOrPush(Vector2Int direction)
+        {
+            if (direction == Vector2Int.zero) return false;
+
+            var nextDesiredCell = _currentCell + direction;
+            if (!_mapGridConfig.IsWithinBounds(nextDesiredCell)) return false;
+
+            // Caso 1: Celda libre y caminable
+            if (_worldGridData.IsWalkable(nextDesiredCell))
+            {
+                _targetCell = nextDesiredCell;
+                _facingDirection = direction;
+                _isMoving = true;
+                return true;
+            }
+
+            // Caso 2: Celda ocupada por una estructura empujable
+            if (_worldGridData.GetCellType(nextDesiredCell) == GridCellType.Structure)
+            {
+                var cell = _worldGridData.GetCell(nextDesiredCell);
+                if (cell.HasValue && cell.Value.Instance != null &&
+                    cell.Value.Instance.TryGetComponent(out StructureController structureController))
                 {
-                    _targetCell = desiredCell;
-                    _isMoving = true;
+                    if (structureController.StructureData != null && structureController.StructureData.CanBePushed)
+                    {
+                        var pushTargetCell = nextDesiredCell + direction;
+
+                        // La celda detras de la estructura debe estar libre y dentro del mapa
+                        if (_mapGridConfig.IsWithinBounds(pushTargetCell) && _worldGridData.IsWalkable(pushTargetCell))
+                        {
+                            // 1. Reubicamos logicamente en la grilla de datos
+                            _worldGridData.MoveToCell(nextDesiredCell, pushTargetCell);
+
+                            // 2. Disparamos el evento para que la estructura pase a su estado de empuje
+                            EventBus.Publish(new StructureChangeCellEvent(transform, nextDesiredCell, pushTargetCell, cell.Value.Instance));
+
+                            // 3. Activamos el paso del jugador hacia la celda que la estructura esta liberando
+                            _targetCell = nextDesiredCell;
+                            _facingDirection = direction;
+                            _isMoving = true;
+                            return true;
+                        }
+                    }
                 }
             }
+
+            return false;
         }
 
         private Vector2Int CursorCell()
@@ -323,7 +365,7 @@ namespace DontWaterMyBurrow.Player
                 {
                     if (structure.IsDamaged)
                     {
-                        EventBus.Publish(new RepairStructureRequestEvent(structure.Position, structure.StructureData, (success) =>
+                        EventBus.Publish(new RepairStructureRequestEvent(structure.CurrentCell, structure.StructureData, (success) =>
                         {
                             if (success) structure.Repair(_repairAmount);
                             else if (_debugMode) Debug.LogWarning("Can't repair. Player doesn't have enough resources.");
