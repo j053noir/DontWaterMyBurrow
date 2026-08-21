@@ -66,6 +66,16 @@ namespace DontWaterMyBurrow.Data
             }
         }
 
+        public void MoveToCell(Vector2Int from, Vector2Int to)
+        {
+            if (IsCellOccupied(from) && !IsCellOccupied(to))
+            {
+                var gridObject = _occupiedCells[from];
+                _occupiedCells.Remove(from);
+                _occupiedCells[to] = gridObject;
+            }
+        }
+
         public void Reset()
         {
             foreach (var item in _occupiedCells)

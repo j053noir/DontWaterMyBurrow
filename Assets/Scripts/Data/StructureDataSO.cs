@@ -19,5 +19,6 @@ namespace DontWaterMyBurrow.Data
         public StructureType Type;
         public List<StructureCost> Costs;
         public int MaxHealth;
+        public bool CanBePushed;
     }
 }

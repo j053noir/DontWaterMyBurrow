@@ -19,3 +19,4 @@ MonoBehaviour:
   - Type: 2
     Cost: 1
   MaxHealth: 50
+  CanBePushed: 1
